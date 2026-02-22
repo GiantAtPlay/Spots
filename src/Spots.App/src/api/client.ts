@@ -75,6 +75,7 @@ export const exportTrackerMissing = async (trackerId: number): Promise<string> =
 export const getCollection = (params?: {
   setCode?: string;
   spotId?: number;
+  cardId?: number;
   search?: string;
   page?: number;
   pageSize?: number;
@@ -82,6 +83,7 @@ export const getCollection = (params?: {
   const searchParams = new URLSearchParams();
   if (params?.setCode) searchParams.set('setCode', params.setCode);
   if (params?.spotId) searchParams.set('spotId', String(params.spotId));
+  if (params?.cardId) searchParams.set('cardId', String(params.cardId));
   if (params?.search) searchParams.set('search', params.search);
   if (params?.page) searchParams.set('page', String(params.page));
   if (params?.pageSize) searchParams.set('pageSize', String(params.pageSize));
