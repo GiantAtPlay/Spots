@@ -12,7 +12,7 @@ interface NavItem {
   path: string
   label: string
   icon: string
-  children?: NavItem[]
+  children?: { path: string; label: string; icon: string }[]
 }
 
 const navItems: NavItem[] = [
@@ -22,8 +22,7 @@ const navItems: NavItem[] = [
     label: 'Collection',
     icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10',
     children: [
-      { path: '/collection', label: 'Collection', icon: '' },
-      { path: '/search', label: 'Add Cards', icon: '' },
+      { path: '/search', label: 'Add Cards', icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7' },
     ]
   },
   { path: '/trackers', label: 'Trackers', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
@@ -115,13 +114,18 @@ export default function Layout({ children, darkMode, onToggleDarkMode }: LayoutP
                           to={child.path}
                           onClick={() => setSidebarOpen(false)}
                           className={`
-                            flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
+                            flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors
                             ${childIsActive
                               ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
                               : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700/50'
                             }
                           `}
                         >
+                          {child.icon && (
+                            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={child.icon} />
+                            </svg>
+                          )}
                           {child.label}
                         </Link>
                       )
