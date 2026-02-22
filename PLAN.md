@@ -325,21 +325,22 @@ This document tracks planned updates to be implemented across multiple branches 
 ## Phase 7: Trade View Feature
 
 ### 7.1 Create For Trade page
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/for-trade-page
 
 **Requirements:**
 - New page showing all cards marked `ForTrade = true`
 - Searchable (same as collection page)
 - Support both visual and table views
 - Add navigation item nested under Collection
-- Route: `/trade` or `/collection/trade`
+- Route: `/trade`
 
 **Files affected:**
 - `src/Spots.App/src/pages/TradePage.tsx` (new file)
 - `src/Spots.App/src/App.tsx` (new route)
 - `src/Spots.App/src/components/Layout.tsx` (navigation)
-- `src/Spots.Api/Controllers/CollectionController.cs` (fortrade endpoint may exist already)
+- `src/Spots.App/src/api/client.ts` (updated getForTrade)
+- `src/Spots.Api/Controllers/CollectionController.cs` (updated fortrade endpoint)
 
 ---
 

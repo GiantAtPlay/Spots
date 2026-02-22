@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import TrackersPage from './pages/TrackersPage'
 import TrackerDetailPage from './pages/TrackerDetailPage'
 import CollectionPage from './pages/CollectionPage'
+import TradePage from './pages/TradePage'
 import SpotsPage from './pages/SpotsPage'
 import SettingsPage from './pages/SettingsPage'
 import SetupPage from './pages/SetupPage'
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/trackers" element={<TrackersPage />} />
           <Route path="/trackers/:id" element={<TrackerDetailPage />} />
           <Route path="/collection" element={<CollectionPage />} />
+          <Route path="/trade" element={<TradePage />} />
           <Route path="/spots" element={<SpotsPage />} />
           <Route path="/spots/:id" element={<SpotDetailPage />} />
           <Route path="/search" element={<SearchPage />} />

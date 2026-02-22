@@ -107,8 +107,8 @@ export const updateCollectionEntry = (id: number, data: { spotId?: number; forTr
 export const deleteCollectionEntry = (id: number) =>
   request<void>(`/collection/${id}`, { method: 'DELETE' });
 
-export const getForTrade = () =>
-  request<import('../types').CollectionEntry[]>('/collection/fortrade');
+export const getForTrade = (search?: string, page = 1) =>
+  request<import('../types').CollectionCard[]>(`/collection/fortrade?search=${encodeURIComponent(search || '')}&page=${page}`);
 
 export const resetCollection = () =>
   request<void>('/collection/reset', { method: 'DELETE' });

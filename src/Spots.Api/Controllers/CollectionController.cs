@@ -43,7 +43,33 @@ public class CollectionController : ControllerBase
         if (!string.IsNullOrEmpty(search))
             query = query.Where(ce => ce.Card.Name.Contains(search));
 
-        // Group by card
+        return await GetGroupedCards(query, page, pageSize);
+    }
+
+    /// <summary>
+    /// Returns cards marked for trade, grouped by card.
+    /// </summary>
+    [HttpGet("fortrade")]
+    public async Task<ActionResult<List<CollectionCardDto>>> GetForTrade(
+        [FromQuery] string? search = null,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 60)
+    {
+        var query = _db.CollectionEntries
+            .Include(ce => ce.Card)
+                .ThenInclude(c => c.Prices)
+            .Include(ce => ce.Spot)
+            .Where(ce => ce.ForTrade)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(ce => ce.Card.Name.Contains(search));
+
+        return await GetGroupedCards(query, page, pageSize);
+    }
+
+    private async Task<ActionResult<List<CollectionCardDto>>> GetGroupedCards(IQueryable<CollectionEntry> query, int page, int pageSize)
+    {
         var grouped = await query
             .OrderBy(ce => ce.Card.Name)
             .ThenBy(ce => ce.Card.SetCode)
@@ -207,28 +233,5 @@ public class CollectionController : ControllerBase
         _db.CollectionEntries.RemoveRange(entries);
         await _db.SaveChangesAsync();
         return NoContent();
-    }
-
-    /// <summary>
-    /// Get cards marked for trade.
-    /// </summary>
-    [HttpGet("fortrade")]
-    public async Task<ActionResult<List<CollectionEntryDto>>> GetForTrade()
-    {
-        var entries = await _db.CollectionEntries
-            .Where(ce => ce.ForTrade)
-            .Include(ce => ce.Spot)
-            .OrderBy(ce => ce.Card.Name)
-            .ToListAsync();
-
-        return Ok(entries.Select(e => new CollectionEntryDto
-        {
-            Id = e.Id,
-            CardId = e.CardId,
-            IsFoil = e.IsFoil,
-            SpotId = e.SpotId,
-            SpotName = e.Spot?.Name,
-            ForTrade = e.ForTrade,
-        }).ToList());
     }
 }
