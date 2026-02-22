@@ -193,8 +193,8 @@ This document tracks planned updates to be implemented across multiple branches 
 ## Phase 4: Add Cards Improvements
 
 ### 4.1 Set number sort order
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/set-number-sort
 
 **Requirements:**
 - When viewing cards by set, sort search results by collector number
@@ -202,8 +202,7 @@ This document tracks planned updates to be implemented across multiple branches 
 - Applies to SetBrowserPage view
 
 **Files affected:**
-- `src/Spots.App/src/pages/SetBrowserPage.tsx`
-- Potentially backend sorting in `src/Spots.Api/Controllers/CardsController.cs`
+- `src/Spots.Api/Controllers/SetsController.cs`
 
 ---
 
