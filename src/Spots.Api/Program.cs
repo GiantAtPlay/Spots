@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Spots.Api.Data;
+using Spots.Api.Models;
 using Spots.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +33,31 @@ using (var scope = app.Services.CreateScope())
     {
         Directory.CreateDirectory(dataDir);
     }
-    db.Database.EnsureCreated();
+    db.Database.Migrate();
+
+    // Seed default settings if not exist
+    if (!db.SyncSettings.Any())
+    {
+        db.SyncSettings.Add(new SyncSettings
+        {
+            Id = 1,
+            CardSyncSchedule = "daily",
+            PriceSyncSchedule = "weekly",
+            CardSyncRecentMonths = 3
+        });
+    }
+    if (!db.UserSettings.Any())
+    {
+        db.UserSettings.Add(new UserSettings
+        {
+            Id = 1,
+            DarkMode = true,
+            DefaultViewMode = "visual",
+            InitialSetupComplete = false,
+            GridColumns = 5
+        });
+    }
+    db.SaveChanges();
 }
 
 // Serve static files (React build output)

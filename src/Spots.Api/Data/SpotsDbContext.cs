@@ -77,23 +77,5 @@ public class SpotsDbContext : DbContext
                 .HasForeignKey(ce => ce.SpotId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
-
-        // Seed default settings
-        modelBuilder.Entity<SyncSettings>().HasData(new SyncSettings
-        {
-            Id = 1,
-            CardSyncSchedule = "daily",
-            PriceSyncSchedule = "weekly",
-            CardSyncRecentMonths = 3
-        });
-
-        modelBuilder.Entity<UserSettings>().HasData(new UserSettings
-        {
-            Id = 1,
-            DarkMode = true,
-            DefaultViewMode = "visual",
-            InitialSetupComplete = false,
-            GridColumns = 5
-        });
     }
 }
