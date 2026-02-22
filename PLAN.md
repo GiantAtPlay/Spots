@@ -88,6 +88,65 @@ This document tracks planned updates to be implemented across multiple branches 
 
 ---
 
+### 2.3 Update Manage Card modal buttons
+**Status:** Completed
+**Branch:** feature/button-consistency-table-improvements
+
+**Requirements:**
+- Remove `+` symbol from button text
+- Change "+ Add Standard" → "Add Standard"
+- Change "+ Add Foil" → "Add Foil"
+- Maintain existing colors (primary blue for standard, amber for foil)
+
+**Files affected:**
+- `src/Spots.App/src/components/CardManageModal.tsx`
+
+---
+
+### 2.4 Refactor Collection table view buttons
+**Status:** Completed
+**Branch:** feature/button-consistency-table-improvements
+
+**Requirements:**
+- Remove Standard and Foil columns with +/- buttons
+- Add single "Actions" column with "Add" and "Add Foil" buttons side by side
+- Match styling from SetBrowserPage (primary blue for Add, amber for Add Foil)
+
+**Files affected:**
+- `src/Spots.App/src/pages/CollectionPage.tsx`
+
+---
+
+### 2.5 Update Spot column logic in Collection table
+**Status:** Completed
+**Branch:** feature/button-consistency-table-improvements
+
+**Requirements:**
+- If all copies in same spot: show spot name only (e.g., "Binder")
+- If copies in different spots: show "Multiple (N)" where N = count of unique spots
+- If no spots assigned: show "-"
+- Example: 3 copies in 2 different spots → "Multiple (2)"
+
+**Files affected:**
+- `src/Spots.App/src/pages/CollectionPage.tsx`
+
+---
+
+### 2.6 Add quantity columns to Set Browser table view
+**Status:** Completed
+**Branch:** feature/button-consistency-table-improvements
+
+**Requirements:**
+- Add "Standard" column showing count of non-foil copies
+- Add "Foil" column showing count of foil copies
+- Position: after Rarity column, before Actions column
+- Display just the number (column headers provide context)
+
+**Files affected:**
+- `src/Spots.App/src/pages/SetBrowserPage.tsx`
+
+---
+
 ## Phase 3: Dashboard Enhancements
 
 ### 3.1 Top 10 most expensive cards
