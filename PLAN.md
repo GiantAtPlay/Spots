@@ -207,35 +207,45 @@ This document tracks planned updates to be implemented across multiple branches 
 ---
 
 ### 4.2 Bulk multi-select
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/bulk-actions-set-browser
 
 **Requirements:**
-- Ctrl+click to select multiple cards in search/set browser
-- When cards selected, show bulk action buttons
-- Bulk actions: "Add selected" and "Add foil selected"
-- Clear selection option
+- Add checkbox column to table view (left side)
+- Add "Select All / None" checkbox in header
+- Individual row checkboxes for selection
+- Sticky action panel at bottom when cards selected
+- Panel shows: spot dropdown, for-trade toggle, Add button, Add Foil button
+- "Select All" selects all cards on current page only
+- Clear selection after successful add
+- Loading indicator during bulk add
+- Success message after completion
+- Handle large selections efficiently (batch processing)
+- Subtle highlight on selected rows
+
+**Implementation notes:**
+- Batch process cards in groups of 10
+- Show progress indicator "Adding X of Y..."
+- Keep UI responsive during bulk operations
 
 **Files affected:**
 - `src/Spots.App/src/pages/SetBrowserPage.tsx`
-- `src/Spots.App/src/pages/SearchPage.tsx`
 
 ---
 
 ### 4.3 Bulk action defaults
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/bulk-actions-set-browser
 
 **Requirements:**
-- When performing bulk add, allow setting:
-  - Default spot location
-  - Default for-trade status
-- Show modal or inline form when bulk action triggered
-- Settings apply to all cards in the bulk operation
+- Optional spot selection in sticky panel
+- Optional for-trade toggle in sticky panel
+- Settings apply to all cards in bulk add
+- If no spot selected → cards added with spotId = null
+- If trade not selected → cards added with forTrade = false
 
 **Files affected:**
 - `src/Spots.App/src/pages/SetBrowserPage.tsx`
-- `src/Spots.App/src/pages/SearchPage.tsx`
 - `src/Spots.Api/Controllers/CollectionController.cs` (bulk endpoint if needed)
 
 ---
