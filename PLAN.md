@@ -150,34 +150,43 @@ This document tracks planned updates to be implemented across multiple branches 
 ## Phase 3: Dashboard Enhancements
 
 ### 3.1 Top 10 most expensive cards
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/dashboard-enhancements
 
 **Requirements:**
 - Add new section to dashboard showing top 10 most expensive cards
 - Sort by individual card value (not total value × quantity)
+- Each foil/non-foil variant appears once (if both in collection, both can appear)
 - Use foil price if card is foil, otherwise standard price
-- Display card name, set, foil status, and price
+- Display: numbered list (1-10), card name, set name, foil tag, price
+- Condensed/small display
+- Click navigates to `/collection?cardId=X` which filters collection to that card
 
 **Files affected:**
 - `src/Spots.App/src/pages/DashboardPage.tsx`
+- `src/Spots.App/src/pages/CollectionPage.tsx` (add cardId query param filter)
+- `src/Spots.App/src/types/index.ts`
 - `src/Spots.Api/Controllers/DashboardController.cs`
-- `src/Spots.Api/DTOs/DashboardDTOs.cs` (or equivalent)
+- `src/Spots.Api/DTOs/DashboardDto.cs`
 
 ---
 
 ### 3.2 Separate foil/non-foil in nearest to completion
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/dashboard-enhancements
 
 **Requirements:**
-- When a tracker is tracking both foil and non-foil, show as two separate progress items
-- Each item shows its own progress bar
-- Helps users see which variant they're closer to completing
+- Split trackers into separate entries for foil and non-foil
+- Only show entries for variants the tracker is tracking
+- Each entry shows its own progress (not combined)
+- Exclude items at 100% completion
+- Order by completion percentage descending, take top 10
+- Display format: "TrackerName (Foil)" or "TrackerName (Non-Foil)"
 
 **Files affected:**
 - `src/Spots.App/src/pages/DashboardPage.tsx`
 - `src/Spots.Api/Controllers/DashboardController.cs`
+- `src/Spots.Api/DTOs/DashboardDto.cs`
 
 ---
 
