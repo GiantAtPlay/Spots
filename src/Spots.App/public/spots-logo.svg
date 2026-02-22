@@ -1,0 +1,38 @@
+<svg width="900" height="180" viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .letter {
+      font-family: 'Arial', 'Helvetica', sans-serif;
+      font-weight: 700;
+      font-size: 72px;
+      dominant-baseline: middle;
+      text-anchor: middle;
+    }
+  </style>
+
+  <!-- MTG Mana Colors -->
+  <!-- White: #F8F6F0 -->
+  <!-- Blue: #0E68AB -->
+  <!-- Black: #1A1A1A -->
+  <!-- Red: #D3202A -->
+  <!-- Green: #00733E -->
+
+  <!-- S -->
+  <circle cx="90" cy="90" r="70" fill="#F8F6F0" stroke="#ccc" stroke-width="2"></circle>
+  <text x="90" y="95" class="letter" fill="#111">S</text>
+
+  <!-- P -->
+  <circle cx="270" cy="90" r="70" fill="#0E68AB"></circle>
+  <text x="270" y="95" class="letter" fill="#FFFFFF">P</text>
+
+  <!-- O -->
+  <circle cx="450" cy="90" r="70" fill="#1A1A1A"></circle>
+  <text x="450" y="95" class="letter" fill="#FFFFFF">O</text>
+
+  <!-- T -->
+  <circle cx="630" cy="90" r="70" fill="#D3202A"></circle>
+  <text x="630" y="95" class="letter" fill="#FFFFFF">T</text>
+
+  <!-- S -->
+  <circle cx="810" cy="90" r="70" fill="#00733E"></circle>
+  <text x="810" y="95" class="letter" fill="#FFFFFF">S</text>
+</svg>
