@@ -15,9 +15,9 @@ A personal Magic: The Gathering collection tracker built as a single-container D
 - **Theme**: Light and dark mode support
 
 ## To-do list
-- [ ] Dashboard - Trackers displaying incorrect card totals
+- [x] Dashboard - Trackers displaying incorrect card totals
 - [ ] Dashboard - Add most expensive cards list (Top 10)
-- [ ] Dashboard - Nearest to completion should list foil and non foil as separate items when collecting both
+- [x] Dashboard - Nearest to completion should list foil and non foil as separate items when collecting both
 - [ ] Spots - Add ability to move/reorder spots (Drag & drop?)
 - [ ] Add Cards - Add ability to add foils from visual view like on table view
 - [ ] Add Cards - Ability to set defaults for each add. E.g. define that all cards added will be allocated to a certain spot
@@ -28,8 +28,8 @@ A personal Magic: The Gathering collection tracker built as a single-container D
 - [ ] Tracker - Add ability to import a list to a custom tracker. For use with archidekt initially.
 - [ ] Trade view - New feature: Add page and navigation item to view all cards marked for trade. Should be searchable and have the same views available as collection page
 - [ ] Collection - Add 'Add card' button to collection page
-- [ ] Logo - Create a logo and add to the header
-- [ ] Navigation - Reorder navigation: Dashboard, Collection, Trackers, Spots. Add cards and For trade should be nested under Collection.
+- [x] Logo - Create a logo and add to the header
+- [x] Navigation - Reorder navigation: Dashboard, Collection, Trackers, Spots. Add cards and For trade should be nested under Collection.
 - [ ] Settings - Implement the ability to backup the database.
 - [ ] Settings - Allow selection of currency to display card values in
 

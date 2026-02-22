@@ -59,20 +59,18 @@ This document tracks planned updates to be implemented across multiple branches 
 ## Phase 2: Navigation & Quick Add Refactor
 
 ### 2.1 Restructure navigation
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/restructure-navigation
 
 **Requirements:**
 - New order: Dashboard, Collection, Trackers, Spots, Settings
 - Collection has nested items (always visible, indented):
   - Collection (main collection page)
   - Add Cards
-  - For Trade (new page - see 7.1)
-- Update Layout.tsx navigation rendering
+  - For Trade (new page - see 7.1 - not yet implemented)
 
 **Files affected:**
 - `src/Spots.App/src/components/Layout.tsx`
-- `src/Spots.App/src/App.tsx` (if routing changes needed)
 
 ---
 
