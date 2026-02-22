@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { getCollection, createCollectionEntry, deleteCollectionEntry } from '../api/client'
 import ViewToggle from '../components/ViewToggle'
@@ -19,24 +19,55 @@ export default function CollectionPage() {
   const [page, setPage] = useState(1)
   const { settings, updateGridColumns } = useSettings()
   const [selectedCard, setSelectedCard] = useState<CollectionCard | null>(null)
+  const highlightedCardRef = useRef<HTMLDivElement>(null)
+  const highlightedRowRef = useRef<HTMLTableRowElement>(null)
 
   const cardIdParam = searchParams.get('cardId')
   const highlightCardId = cardIdParam ? parseInt(cardIdParam, 10) : null
 
-  const load = useCallback(() => {
+  const load = useCallback((cardId?: number) => {
     setLoading(true)
-    getCollection({ search: search || undefined, page, pageSize: 60 })
+    getCollection({ 
+      search: search || undefined, 
+      cardId: cardId,
+      page, 
+      pageSize: 60 
+    })
       .then(setCards)
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [search, page])
 
-  useEffect(() => { load() }, [page])
+  useEffect(() => { load(highlightCardId ?? undefined) }, [page])
+  
+  // Reload when cardId param changes (navigating from dashboard)
+  useEffect(() => {
+    setLoading(true)
+    getCollection({ 
+      search: search || undefined, 
+      cardId: highlightCardId ?? undefined,
+      page: 1, 
+      pageSize: 60 
+    })
+      .then(cardsData => {
+        setCards(cardsData)
+        setPage(1)
+        // Scroll to highlighted card after render
+        setTimeout(() => {
+          const ref = viewMode === 'visual' ? highlightedCardRef : highlightedRowRef
+          if (highlightCardId && ref.current) {
+            ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          }
+        }, 100)
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false))
+  }, [highlightCardId])
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1)
-      load()
+      load(highlightCardId ?? undefined)
     }, 300)
     return () => clearTimeout(timer)
   }, [search])
@@ -111,7 +142,11 @@ export default function CollectionPage() {
       ) : viewMode === 'visual' ? (
         <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${settings.gridColumns}, minmax(0, 1fr))` }}>
           {cards.map(card => (
-            <div key={card.cardId} className="relative group">
+            <div 
+              key={card.cardId} 
+              ref={card.cardId === highlightCardId ? highlightedCardRef : undefined}
+              className={`relative group ${card.cardId === highlightCardId ? 'ring-4 ring-primary-500 ring-offset-2 dark:ring-offset-gray-800 rounded-xl' : ''}`}
+            >
               <div className="cursor-pointer" onClick={() => setSelectedCard(card)}>
                 <CardImage
                   src={card.imageUri ?? card.imageUriSmall}
@@ -154,31 +189,37 @@ export default function CollectionPage() {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {cards.map(card => {
+                const isHighlighted = card.cardId === highlightCardId
                 return (
-                <CardHoverPreview key={card.cardId} imageUri={card.imageUri} cardName={card.cardName} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 cursor-pointer" onClick={() => setSelectedCard(card)}>
-                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white truncate">{card.cardName}</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{card.setCode.toUpperCase()}</td>
-                    <td className="px-4 py-3">
-                      <span className={`badge ${
-                        card.rarity === 'mythic' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' :
-                        card.rarity === 'rare' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                        'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-                      }`}>
-                        {card.rarity}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center font-medium text-gray-700 dark:text-gray-300">{card.standardCount}</td>
-                    <td className="px-4 py-3 text-center font-medium text-amber-700 dark:text-amber-400">{card.foilCount}</td>
-                    <td className="px-4 py-3 text-right text-gray-600 dark:text-gray-400">
-                      {card.priceEur?.toFixed(2) ?? '-'}
-                    </td>
-                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
-                      <div className="flex items-center justify-center gap-1">
-                        <button onClick={() => handleQuickAdd(card.cardId, false)} className="btn-sm text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded px-2 py-1">Add</button>
-                        <button onClick={() => handleQuickAdd(card.cardId, true)} className="btn-sm text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded px-2 py-1">Add Foil</button>
-                      </div>
-                    </td>
-                </CardHoverPreview>
+                <tr 
+                  key={card.cardId} 
+                  ref={isHighlighted ? highlightedRowRef : undefined}
+                  className={`hover:bg-gray-50 dark:hover:bg-gray-700/30 cursor-pointer transition-colors ${isHighlighted ? 'bg-primary-50 dark:bg-primary-900/20 ring-2 ring-primary-500 ring-inset' : ''}`}
+                  onClick={() => setSelectedCard(card)}
+                >
+                  <td className="px-4 py-3 font-medium text-gray-900 dark:text-white truncate">{card.cardName}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{card.setCode.toUpperCase()}</td>
+                  <td className="px-4 py-3">
+                    <span className={`badge ${
+                      card.rarity === 'mythic' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' :
+                      card.rarity === 'rare' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                      'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    }`}>
+                      {card.rarity}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-center font-medium text-gray-700 dark:text-gray-300">{card.standardCount}</td>
+                  <td className="px-4 py-3 text-center font-medium text-amber-700 dark:text-amber-400">{card.foilCount}</td>
+                  <td className="px-4 py-3 text-right text-gray-600 dark:text-gray-400">
+                    {card.priceEur?.toFixed(2) ?? '-'}
+                  </td>
+                  <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                    <div className="flex items-center justify-center gap-1">
+                      <button onClick={() => handleQuickAdd(card.cardId, false)} className="btn-sm text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded px-2 py-1">Add</button>
+                      <button onClick={() => handleQuickAdd(card.cardId, true)} className="btn-sm text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded px-2 py-1">Add Foil</button>
+                    </div>
+                  </td>
+                </tr>
               )})}
             </tbody>
           </table>

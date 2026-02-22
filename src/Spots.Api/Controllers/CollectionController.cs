@@ -24,6 +24,7 @@ public class CollectionController : ControllerBase
     public async Task<ActionResult<List<CollectionCardDto>>> GetCollection(
         [FromQuery] string? setCode = null,
         [FromQuery] int? spotId = null,
+        [FromQuery] int? cardId = null,
         [FromQuery] string? search = null,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 50)
@@ -39,6 +40,9 @@ public class CollectionController : ControllerBase
 
         if (spotId.HasValue)
             query = query.Where(ce => ce.SpotId == spotId);
+
+        if (cardId.HasValue)
+            query = query.Where(ce => ce.CardId == cardId.Value);
 
         if (!string.IsNullOrEmpty(search))
             query = query.Where(ce => ce.Card.Name.Contains(search));
