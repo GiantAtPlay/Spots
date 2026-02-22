@@ -14,6 +14,7 @@ export default function CollectionPage() {
   const navigate = useNavigate()
   const [cards, setCards] = useState<CollectionCard[]>([])
   const [loading, setLoading] = useState(true)
+  const [initialLoad, setInitialLoad] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>('visual')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -35,7 +36,10 @@ export default function CollectionPage() {
     })
       .then(setCards)
       .catch(console.error)
-      .finally(() => setLoading(false))
+      .finally(() => {
+        setLoading(false)
+        setInitialLoad(false)
+      })
   }, [search, page])
 
   useEffect(() => { load(highlightCardId ?? undefined) }, [page])
@@ -61,7 +65,10 @@ export default function CollectionPage() {
         }, 100)
       })
       .catch(console.error)
-      .finally(() => setLoading(false))
+      .finally(() => {
+        setLoading(false)
+        setInitialLoad(false)
+      })
   }, [highlightCardId])
 
   useEffect(() => {
@@ -127,9 +134,14 @@ export default function CollectionPage() {
           placeholder="Search your collection..."
           className="input max-w-md"
         />
+        {loading && !initialLoad && (
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
+          </div>
+        )}
       </div>
 
-      {loading ? (
+      {initialLoad ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
