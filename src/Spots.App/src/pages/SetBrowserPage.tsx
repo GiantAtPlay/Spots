@@ -156,6 +156,8 @@ export default function SetBrowserPage() {
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-12">#</th>
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Name</th>
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-24">Rarity</th>
+                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-20">Standard</th>
+                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-20">Foil</th>
                 <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-40">Actions</th>
               </tr>
             </thead>
@@ -177,6 +179,8 @@ export default function SetBrowserPage() {
                           {card.rarity}
                         </span>
                       </td>
+                      <td className="px-4 py-3 text-center font-medium text-gray-700 dark:text-gray-300">{stdCount}</td>
+                      <td className="px-4 py-3 text-center font-medium text-amber-700 dark:text-amber-400">{foilCount}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-center gap-1" onClick={e => e.stopPropagation()}>
                           <button onClick={() => handleQuickAdd(card.id, false)} className="btn-sm text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded px-2 py-1">Add</button>

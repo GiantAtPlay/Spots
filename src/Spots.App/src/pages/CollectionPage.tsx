@@ -127,14 +127,15 @@ export default function CollectionPage() {
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Name</th>
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-20">Set</th>
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-24">Rarity</th>
-                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-28">Standard</th>
-                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-28">Foil</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-24">Spot</th>
+                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-20">Standard</th>
+                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-20">Foil</th>
                 <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400 w-20">Price</th>
+                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-40">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {cards.map(card => (
+              {cards.map(card => {
+                return (
                 <CardHoverPreview key={card.cardId} imageUri={card.imageUri} cardName={card.cardName} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 cursor-pointer" onClick={() => setSelectedCard(card)}>
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-white truncate">{card.cardName}</td>
                     <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{card.setCode.toUpperCase()}</td>
@@ -147,28 +148,19 @@ export default function CollectionPage() {
                         {card.rarity}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
-                      <div className="flex items-center justify-center gap-1">
-                        <button onClick={() => handleQuickRemove(card.cardId, false)} disabled={card.standardCount === 0} className="btn-sm text-xs bg-gray-200 dark:bg-gray-600 rounded px-1.5 disabled:opacity-30">-</button>
-                        <span className="w-6 text-center font-medium">{card.standardCount}</span>
-                        <button onClick={() => handleQuickAdd(card.cardId, false)} className="btn-sm text-xs bg-gray-200 dark:bg-gray-600 rounded px-1.5">+</button>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
-                      <div className="flex items-center justify-center gap-1">
-                        <button onClick={() => handleQuickRemove(card.cardId, true)} disabled={card.foilCount === 0} className="btn-sm text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded px-1.5 disabled:opacity-30">-</button>
-                        <span className="w-6 text-center font-medium">{card.foilCount}</span>
-                        <button onClick={() => handleQuickAdd(card.cardId, true)} className="btn-sm text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded px-1.5">+</button>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 text-xs truncate">
-                      {card.entries.filter(e => e.spotName).map(e => e.spotName).filter((v, i, a) => a.indexOf(v) === i).join(', ') || '-'}
-                    </td>
+                    <td className="px-4 py-3 text-center font-medium text-gray-700 dark:text-gray-300">{card.standardCount}</td>
+                    <td className="px-4 py-3 text-center font-medium text-amber-700 dark:text-amber-400">{card.foilCount}</td>
                     <td className="px-4 py-3 text-right text-gray-600 dark:text-gray-400">
                       {card.priceEur?.toFixed(2) ?? '-'}
                     </td>
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                      <div className="flex items-center justify-center gap-1">
+                        <button onClick={() => handleQuickAdd(card.cardId, false)} className="btn-sm text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded px-2 py-1">Add</button>
+                        <button onClick={() => handleQuickAdd(card.cardId, true)} className="btn-sm text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded px-2 py-1">Add Foil</button>
+                      </div>
+                    </td>
                 </CardHoverPreview>
-              ))}
+              )})}
             </tbody>
           </table>
         </div>

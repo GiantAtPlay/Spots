@@ -175,7 +175,7 @@ export default function CardManageModal({ card, onClose, onUpdate }: CardManageM
                     disabled={saving}
                     className="text-xs px-3 py-1 rounded-lg bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50 transition-colors"
                   >
-                    + Add Standard
+                    Add Standard
                   </button>
                 </div>
                 <div className="space-y-1.5">
@@ -197,7 +197,7 @@ export default function CardManageModal({ card, onClose, onUpdate }: CardManageM
                     disabled={saving}
                     className="text-xs px-3 py-1 rounded-lg bg-amber-500 text-white hover:bg-amber-600 disabled:opacity-50 transition-colors"
                   >
-                    + Add Foil
+                    Add Foil
                   </button>
                 </div>
                 <div className="space-y-1.5">
