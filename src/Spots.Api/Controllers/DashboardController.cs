@@ -81,6 +81,8 @@ public class DashboardController : ControllerBase
                 TrackerId = tracker.Id,
                 TrackerName = tracker.Name,
                 SetCode = tracker.SetCode,
+                TrackFoil = tracker.TrackFoil,
+                TrackNonFoil = tracker.TrackNonFoil,
                 TotalCards = total,
                 CollectedCards = overallCollected,
                 CompletionPercentage = overallTotal > 0 ? Math.Round((double)overallCollected / overallTotal * 100, 1) : 0,
