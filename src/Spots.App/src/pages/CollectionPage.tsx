@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { getCollection, createCollectionEntry, deleteCollectionEntry } from '../api/client'
 import ViewToggle from '../components/ViewToggle'
 import CardImage from '../components/CardImage'
@@ -78,6 +78,9 @@ export default function CollectionPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Collection</h1>
         <div className="flex items-center gap-4">
+          <Link to="/search" className="btn-primary">
+            Add Card
+          </Link>
           {viewMode === 'visual' && (
             <GridSizeSlider columns={settings.gridColumns} onChange={updateGridColumns} />
           )}

@@ -355,8 +355,8 @@ This document tracks planned updates to be implemented across multiple branches 
 ## Phase 8: Collection Enhancement
 
 ### 8.1 Add card button on collection page
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/add-card-button-collection
 
 **Requirements:**
 - Add "Add Card" button to collection page header
