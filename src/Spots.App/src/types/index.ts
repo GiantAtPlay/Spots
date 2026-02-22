@@ -164,7 +164,27 @@ export interface Dashboard {
   uniqueCards: number;
   approxValueEur: number;
   trackerProgress: TrackerProgress[];
-  nearCompleteTrackers: TrackerProgress[];
+  nearCompleteTrackers: NearCompleteItem[];
+  topExpensiveCards: TopCard[];
+}
+
+export interface NearCompleteItem {
+  trackerId: number;
+  trackerName: string;
+  setCode?: string;
+  isFoil: boolean;
+  completionPercentage: number;
+  collected: number;
+  total: number;
+}
+
+export interface TopCard {
+  cardId: number;
+  cardName: string;
+  setName: string;
+  setCode: string;
+  isFoil: boolean;
+  price: number;
 }
 
 export interface TrackerProgress {

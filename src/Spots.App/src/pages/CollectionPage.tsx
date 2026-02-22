@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { getCollection, createCollectionEntry, deleteCollectionEntry } from '../api/client'
 import ViewToggle from '../components/ViewToggle'
 import CardImage from '../components/CardImage'
@@ -9,6 +10,8 @@ import { useSettings } from '../components/SettingsContext'
 import type { CollectionCard, ViewMode } from '../types'
 
 export default function CollectionPage() {
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [cards, setCards] = useState<CollectionCard[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>('visual')
@@ -16,6 +19,9 @@ export default function CollectionPage() {
   const [page, setPage] = useState(1)
   const { settings, updateGridColumns } = useSettings()
   const [selectedCard, setSelectedCard] = useState<CollectionCard | null>(null)
+
+  const cardIdParam = searchParams.get('cardId')
+  const highlightCardId = cardIdParam ? parseInt(cardIdParam, 10) : null
 
   const load = useCallback(() => {
     setLoading(true)
@@ -34,6 +40,16 @@ export default function CollectionPage() {
     }, 300)
     return () => clearTimeout(timer)
   }, [search])
+
+  // Open modal for cardId from query param
+  useEffect(() => {
+    if (highlightCardId && cards.length > 0) {
+      const card = cards.find(c => c.cardId === highlightCardId)
+      if (card) {
+        setSelectedCard(card)
+      }
+    }
+  }, [highlightCardId, cards])
 
   const handleQuickAdd = async (cardId: number, isFoil: boolean) => {
     try {
@@ -188,7 +204,12 @@ export default function CollectionPage() {
             typeLine: selectedCard.typeLine,
             imageUri: selectedCard.imageUri,
           }}
-          onClose={() => setSelectedCard(null)}
+          onClose={() => {
+            setSelectedCard(null)
+            if (cardIdParam) {
+              navigate('/collection', { replace: true })
+            }
+          }}
           onUpdate={load}
         />
       )}

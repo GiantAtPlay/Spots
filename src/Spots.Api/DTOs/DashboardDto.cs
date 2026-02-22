@@ -6,7 +6,29 @@ public class DashboardDto
     public int UniqueCards { get; set; }
     public decimal ApproxValueEur { get; set; }
     public List<TrackerProgressDto> TrackerProgress { get; set; } = new();
-    public List<TrackerProgressDto> NearCompleteTrackers { get; set; } = new();
+    public List<NearCompleteItemDto> NearCompleteTrackers { get; set; } = new();
+    public List<TopCardDto> TopExpensiveCards { get; set; } = new();
+}
+
+public class NearCompleteItemDto
+{
+    public int TrackerId { get; set; }
+    public string TrackerName { get; set; } = string.Empty;
+    public string? SetCode { get; set; }
+    public bool IsFoil { get; set; }
+    public double CompletionPercentage { get; set; }
+    public int Collected { get; set; }
+    public int Total { get; set; }
+}
+
+public class TopCardDto
+{
+    public int CardId { get; set; }
+    public string CardName { get; set; } = string.Empty;
+    public string SetName { get; set; } = string.Empty;
+    public string SetCode { get; set; } = string.Empty;
+    public bool IsFoil { get; set; }
+    public decimal Price { get; set; }
 }
 
 public class TrackerProgressDto

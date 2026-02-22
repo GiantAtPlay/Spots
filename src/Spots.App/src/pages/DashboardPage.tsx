@@ -59,26 +59,49 @@ export default function DashboardPage() {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Nearest to Complete
           </h2>
-          <div className="space-y-4">
-            {dashboard.nearCompleteTrackers.map(tracker => {
-              const totalNeeded = tracker.trackFoil && tracker.trackNonFoil
-                ? tracker.totalCards * 2
-                : tracker.totalCards
-              return (
-                <Link
-                  key={tracker.trackerId}
-                  to={`/trackers/${tracker.trackerId}`}
-                  className="block hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-3 -mx-3 transition-colors"
-                >
-                  <ProgressBar
-                    percentage={tracker.completionPercentage}
-                    label={`${tracker.trackerName} (${tracker.collectedCards}/${totalNeeded})`}
-                    size="sm"
-                    color={tracker.trackFoil && !tracker.trackNonFoil ? 'bg-amber-500' : 'bg-primary-600'}
-                  />
-                </Link>
-              )
-            })}
+          <div className="space-y-3">
+            {dashboard.nearCompleteTrackers.map(tracker => (
+              <Link
+                key={`${tracker.trackerId}-${tracker.isFoil}`}
+                to={`/trackers/${tracker.trackerId}`}
+                className="block hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-2 -mx-2 transition-colors"
+              >
+                <ProgressBar
+                  percentage={tracker.completionPercentage}
+                  label={`${tracker.trackerName} ${tracker.isFoil ? '(Foil)' : '(Non-Foil)'} (${tracker.collected}/${tracker.total})`}
+                  size="sm"
+                  color={tracker.isFoil ? 'bg-amber-500' : 'bg-primary-600'}
+                />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Top expensive cards */}
+      {dashboard.topExpensiveCards.length > 0 && (
+        <div className="card p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Top 10 Most Valuable
+          </h2>
+          <div className="space-y-1">
+            {dashboard.topExpensiveCards.map((card, index) => (
+              <Link
+                key={`${card.cardId}-${card.isFoil}`}
+                to={`/collection?cardId=${card.cardId}`}
+                className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-2 -mx-2 transition-colors"
+              >
+                <span className="text-sm font-medium text-gray-400 dark:text-gray-500 w-4">{index + 1}.</span>
+                <span className="flex-1 text-sm text-gray-900 dark:text-white truncate">{card.cardName}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{card.setCode.toUpperCase()}</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded ${card.isFoil ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'}`}>
+                  {card.isFoil ? 'Foil' : 'Non'}
+                </span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white w-20 text-right">
+                  €{card.price.toFixed(2)}
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       )}

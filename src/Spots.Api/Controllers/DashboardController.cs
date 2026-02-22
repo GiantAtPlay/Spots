@@ -92,9 +92,108 @@ public class DashboardController : ControllerBase
         }
 
         // Top 10 nearest-to-complete (excluding fully complete)
-        var nearComplete = trackerProgress
-            .Where(t => t.CompletionPercentage < 100 && t.CompletionPercentage > 0)
-            .OrderByDescending(t => t.CompletionPercentage)
+        // Split into separate entries for foil and non-foil
+        var nearCompleteItems = new List<NearCompleteItemDto>();
+        
+        foreach (var tracker in trackers)
+        {
+            var activeCards = tracker.TrackerCards.Where(tc => !tc.IsExcluded).ToList();
+            var total = activeCards.Count;
+            if (total == 0) continue;
+
+            var cardIds = activeCards.Select(tc => tc.CardId).ToList();
+            var relevantEntries = allCollectionEntries.Where(ce => cardIds.Contains(ce.CardId)).ToList();
+
+            var collectedNonFoil = cardIds.Count(cid =>
+                relevantEntries.Any(ce => ce.CardId == cid && !ce.IsFoil));
+            var collectedFoil = cardIds.Count(cid =>
+                relevantEntries.Any(ce => ce.CardId == cid && ce.IsFoil));
+
+            // Add non-foil entry if tracking non-foil
+            if (tracker.TrackNonFoil)
+            {
+                var nonFoilPercent = total > 0 ? Math.Round((double)collectedNonFoil / total * 100, 1) : 0;
+                if (nonFoilPercent < 100 && nonFoilPercent > 0)
+                {
+                    nearCompleteItems.Add(new NearCompleteItemDto
+                    {
+                        TrackerId = tracker.Id,
+                        TrackerName = tracker.Name,
+                        SetCode = tracker.SetCode,
+                        IsFoil = false,
+                        CompletionPercentage = nonFoilPercent,
+                        Collected = collectedNonFoil,
+                        Total = total
+                    });
+                }
+            }
+
+            // Add foil entry if tracking foil
+            if (tracker.TrackFoil)
+            {
+                var foilPercent = total > 0 ? Math.Round((double)collectedFoil / total * 100, 1) : 0;
+                if (foilPercent < 100 && foilPercent > 0)
+                {
+                    nearCompleteItems.Add(new NearCompleteItemDto
+                    {
+                        TrackerId = tracker.Id,
+                        TrackerName = tracker.Name,
+                        SetCode = tracker.SetCode,
+                        IsFoil = true,
+                        CompletionPercentage = foilPercent,
+                        Collected = collectedFoil,
+                        Total = total
+                    });
+                }
+            }
+        }
+
+        var nearComplete = nearCompleteItems
+            .OrderByDescending(n => n.CompletionPercentage)
+            .Take(10)
+            .ToList();
+
+        // Top 10 most expensive cards
+        var topExpensive = new List<TopCardDto>();
+        var cardPrices = await _db.CardPrices
+            .GroupBy(cp => cp.CardId)
+            .Select(g => g.OrderByDescending(cp => cp.UpdatedAt).First())
+            .ToListAsync();
+        
+        var cardDict = (await _db.Cards.ToListAsync()).ToDictionary(c => c.Id);
+
+        // Get unique card+foil combinations from collection
+        var collectionCards = allCollectionEntries
+            .Select(ce => new { ce.CardId, ce.IsFoil })
+            .Distinct()
+            .ToList();
+
+        foreach (var item in collectionCards)
+        {
+            if (!cardDict.TryGetValue(item.CardId, out var card)) continue;
+            
+            var priceRec = cardPrices.FirstOrDefault(cp => cp.CardId == item.CardId);
+            decimal? price = null;
+            if (item.IsFoil)
+                price = priceRec?.EurFoil;
+            else
+                price = priceRec?.Eur;
+            
+            if (price == null || price <= 0) continue;
+
+            topExpensive.Add(new TopCardDto
+            {
+                CardId = item.CardId,
+                CardName = card.Name,
+                SetName = card.SetName,
+                SetCode = card.SetCode,
+                IsFoil = item.IsFoil,
+                Price = price.Value
+            });
+        }
+
+        var topExpensiveCards = topExpensive
+            .OrderByDescending(t => t.Price)
             .Take(10)
             .ToList();
 
@@ -104,7 +203,8 @@ public class DashboardController : ControllerBase
             UniqueCards = uniqueCards,
             ApproxValueEur = totalValue,
             TrackerProgress = trackerProgress,
-            NearCompleteTrackers = nearComplete
+            NearCompleteTrackers = nearComplete,
+            TopExpensiveCards = topExpensiveCards
         });
     }
 }
