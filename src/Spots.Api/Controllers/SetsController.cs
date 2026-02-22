@@ -52,7 +52,6 @@ public class SetsController : ControllerBase
         // First check if we have them locally
         var localCards = await _db.Cards
             .Where(c => c.SetCode == code)
-            .OrderBy(c => c.CollectorNumber)
             .Select(c => new
             {
                 c.Id,
@@ -69,6 +68,13 @@ public class SetsController : ControllerBase
                 c.ImageUriArtCrop
             })
             .ToListAsync();
+
+        // Sort numerically (in memory, since string sort doesn't work for collector numbers)
+        localCards = localCards
+            .OrderBy(c => string.IsNullOrEmpty(c.CollectorNumber) ? 1 : 0)
+            .ThenBy(c => int.TryParse(c.CollectorNumber, out var n) ? n : int.MaxValue)
+            .ThenBy(c => c.CollectorNumber)
+            .ToList();
 
         if (localCards.Any())
             return Ok(localCards);
@@ -78,7 +84,6 @@ public class SetsController : ControllerBase
 
         localCards = await _db.Cards
             .Where(c => c.SetCode == code)
-            .OrderBy(c => c.CollectorNumber)
             .Select(c => new
             {
                 c.Id,
@@ -95,6 +100,13 @@ public class SetsController : ControllerBase
                 c.ImageUriArtCrop
             })
             .ToListAsync();
+
+        // Sort numerically (in memory, since string sort doesn't work for collector numbers)
+        localCards = localCards
+            .OrderBy(c => string.IsNullOrEmpty(c.CollectorNumber) ? 1 : 0)
+            .ThenBy(c => int.TryParse(c.CollectorNumber, out var n) ? n : int.MaxValue)
+            .ThenBy(c => c.CollectorNumber)
+            .ToList();
 
         return Ok(localCards);
     }
