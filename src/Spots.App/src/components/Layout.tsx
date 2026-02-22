@@ -48,11 +48,9 @@ export default function Layout({ children, darkMode, onToggleDarkMode }: LayoutP
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">Spots</span>
+          <Link to="/" className="flex items-center">
+            <img src="/spots-logo.svg" alt="Spots" className="h-8 w-auto" />
+            <span className="sr-only">Spots</span>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -124,7 +122,10 @@ export default function Layout({ children, darkMode, onToggleDarkMode }: LayoutP
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="ml-4 text-lg font-bold text-gray-900 dark:text-white">Spots</span>
+          <Link to="/" className="flex items-center ml-4">
+            <img src="/spots-logo.svg" alt="Spots" className="h-6 w-auto" />
+            <span className="sr-only">Spots</span>
+          </Link>
         </header>
 
         <main className="flex-1 p-6 overflow-auto">

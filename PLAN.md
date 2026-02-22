@@ -43,13 +43,13 @@ This document tracks planned updates to be implemented across multiple branches 
 ---
 
 ### 1.2 Add logo to header
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/add-logo-to-header
 
 **Requirements:**
-- Add logo placeholder to header/sidebar
-- User will provide artwork later
-- Position in Layout component header area
+- Add logo to sidebar header (desktop)
+- Add logo to mobile header
+- Logo file: `public/spots-logo.svg`
 
 **Files affected:**
 - `src/Spots.App/src/components/Layout.tsx`
