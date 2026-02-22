@@ -299,42 +299,54 @@ export default function SetBrowserPage() {
       )}
 
       {/* Bulk Action Panel */}
-      {selectedCards.size > 0 && (
+      {(selectedCards.size > 0 || bulkSuccess) && (
         <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg p-4 z-40">
           <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {selectedCards.size} card{selectedCards.size !== 1 ? 's' : ''} selected
-              </span>
-              <button onClick={clearSelection} className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-                Clear
-              </button>
+              {bulkSuccess ? (
+                <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                  Added successfully!
+                </span>
+              ) : (
+                <>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {selectedCards.size} card{selectedCards.size !== 1 ? 's' : ''} selected
+                  </span>
+                  <button onClick={clearSelection} className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                    Clear
+                  </button>
+                </>
+              )}
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-gray-600 dark:text-gray-400">Spot:</label>
-                <select
-                  value={bulkSpotId ?? ''}
-                  onChange={e => setBulkSpotId(e.target.value ? Number(e.target.value) : undefined)}
-                  className="input text-sm py-1"
-                >
-                  <option value="">None</option>
-                  {spots.map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <input
-                  type="checkbox"
-                  checked={bulkForTrade}
-                  onChange={e => setBulkForTrade(e.target.checked)}
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                For Trade
-              </label>
+              {!bulkSuccess && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm text-gray-600 dark:text-gray-400">Spot:</label>
+                    <select
+                      value={bulkSpotId ?? ''}
+                      onChange={e => setBulkSpotId(e.target.value ? Number(e.target.value) : undefined)}
+                      className="input text-sm py-1"
+                    >
+                      <option value="">None</option>
+                      {spots.map(s => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    <input
+                      type="checkbox"
+                      checked={bulkForTrade}
+                      onChange={e => setBulkForTrade(e.target.checked)}
+                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                    For Trade
+                  </label>
+                </>
+              )}
 
               {bulkLoading && bulkProgress && (
                 <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -342,26 +354,22 @@ export default function SetBrowserPage() {
                 </span>
               )}
 
-              {bulkSuccess && (
-                <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                  Added successfully!
-                </span>
+              {!bulkSuccess && !bulkLoading && (
+                <>
+                  <button
+                    onClick={() => handleBulkAdd(false)}
+                    className="btn-primary btn-sm"
+                  >
+                    Add Standard
+                  </button>
+                  <button
+                    onClick={() => handleBulkAdd(true)}
+                    className="btn-sm bg-amber-500 hover:bg-amber-600 text-white rounded px-3 py-1.5 text-sm font-medium"
+                  >
+                    Add Foil
+                  </button>
+                </>
               )}
-
-              <button
-                onClick={() => handleBulkAdd(false)}
-                disabled={bulkLoading}
-                className="btn-primary btn-sm"
-              >
-                Add Standard
-              </button>
-              <button
-                onClick={() => handleBulkAdd(true)}
-                disabled={bulkLoading}
-                className="btn-sm bg-amber-500 hover:bg-amber-600 text-white rounded px-3 py-1.5 text-sm font-medium disabled:opacity-50"
-              >
-                Add Foil
-              </button>
             </div>
           </div>
         </div>
