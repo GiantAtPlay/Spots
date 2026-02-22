@@ -26,8 +26,8 @@ This document tracks planned updates to be implemented across multiple branches 
 ---
 
 ### 1.1b Fix nearest to completion calculation
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** fix/dashboard-tracker-totals
 
 **Problem:**
 - Nearest to completion section shows (non-foil + foil) / (non-foil)
@@ -35,11 +35,10 @@ This document tracks planned updates to be implemented across multiple branches 
 
 **Solution:**
 - Correct calculation to properly account for foil tracking
-- When tracking both foil and non-foil, show separate items in the list
+- Calculate `totalNeeded` as `totalCards * 2` when tracking both variants
 
 **Files affected:**
 - `src/Spots.App/src/pages/DashboardPage.tsx`
-- `src/Spots.Api/Controllers/DashboardController.cs`
 
 ---
 
