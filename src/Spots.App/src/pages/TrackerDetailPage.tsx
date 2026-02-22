@@ -17,6 +17,7 @@ export default function TrackerDetailPage() {
   const [tracker, setTracker] = useState<Tracker | null>(null)
   const [cards, setCards] = useState<TrackerCard[]>([])
   const [loading, setLoading] = useState(true)
+  const [initialLoad, setInitialLoad] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>('visual')
   const [filter, setFilter] = useState<string>('all')
   const { settings, updateGridColumns } = useSettings()
@@ -29,6 +30,7 @@ export default function TrackerDetailPage() {
   const trackerId = Number(id)
 
   const load = async () => {
+    setLoading(true)
     try {
       const [t, c] = await Promise.all([
         getTracker(trackerId),
@@ -40,6 +42,7 @@ export default function TrackerDetailPage() {
       console.error(e)
     } finally {
       setLoading(false)
+      setInitialLoad(false)
     }
   }
 
@@ -116,7 +119,9 @@ export default function TrackerDetailPage() {
     }
   })
 
-  if (loading) {
+  const tracksBoth = tracker?.trackFoil && tracker?.trackNonFoil
+
+  if (initialLoad) {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -128,21 +133,24 @@ export default function TrackerDetailPage() {
     return <div className="text-center py-12 text-gray-500">Tracker not found</div>
   }
 
-  const tracksBoth = tracker.trackFoil && tracker.trackNonFoil
-
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-start justify-between">
-        <div>
-          <button onClick={() => navigate('/trackers')} className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 mb-2">
-            &larr; Back to Trackers
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{tracker.name}</h1>
-          {tracker.setCode && (
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Set: {tracker.setCode.toUpperCase()}
-            </p>
+        <div className="flex items-center gap-3">
+          <div>
+            <button onClick={() => navigate('/trackers')} className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 mb-2">
+              &larr; Back to Trackers
+            </button>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{tracker.name}</h1>
+            {tracker.setCode && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Set: {tracker.setCode.toUpperCase()}
+              </p>
+            )}
+          </div>
+          {loading && (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
           )}
         </div>
         <div className="flex gap-2">

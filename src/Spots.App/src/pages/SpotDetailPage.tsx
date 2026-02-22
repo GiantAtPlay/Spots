@@ -16,6 +16,7 @@ export default function SpotDetailPage() {
   const [spot, setSpot] = useState<Spot | null>(null)
   const [cards, setCards] = useState<CollectionCard[]>([])
   const [loading, setLoading] = useState(true)
+  const [initialLoad, setInitialLoad] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>('visual')
   const [selectedCard, setSelectedCard] = useState<CollectionCard | null>(null)
   const { settings, updateGridColumns } = useSettings()
@@ -33,6 +34,7 @@ export default function SpotDetailPage() {
       console.error(e)
     } finally {
       setLoading(false)
+      setInitialLoad(false)
     }
   }, [spotId])
 
@@ -60,7 +62,7 @@ export default function SpotDetailPage() {
     }
   }
 
-  if (loading) {
+  if (initialLoad) {
     return (
       <div className="flex justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -71,16 +73,21 @@ export default function SpotDetailPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex items-start justify-between">
-        <div>
-          <button onClick={() => navigate('/spots')} className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 mb-2">
-            &larr; Back to Spots
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {spot?.name ?? 'Spot'}
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {spot?.type} - {cards.reduce((sum, c) => sum + c.standardCount + c.foilCount, 0)} cards
-          </p>
+        <div className="flex items-center gap-3">
+          <div>
+            <button onClick={() => navigate('/spots')} className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 mb-2">
+              &larr; Back to Spots
+            </button>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {spot?.name ?? 'Spot'}
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {spot?.type} - {cards.reduce((sum, c) => sum + c.standardCount + c.foilCount, 0)} cards
+            </p>
+          </div>
+          {loading && (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
+          )}
         </div>
         <div className="flex items-center gap-4">
           {viewMode === 'visual' && (
