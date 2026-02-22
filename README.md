@@ -16,7 +16,6 @@ A personal Magic: The Gathering collection tracker built as a single-container D
 
 ## To-do list
 - [ ] Spots - Add ability to move/reorder spots (Drag & drop?)
-- [ ] Add Cards - Implement bulk actions, multi select with ctrl + click. Then new buttons appear to allow 'Add' and 'Add foil' actions.
 - [ ] Trackers - Add ability to search trackers
 - [ ] Trackers - Add ability to reorder or pin trackers
 - [ ] Tracker - Add ability to import a list to a custom tracker. For use with archidekt initially.
