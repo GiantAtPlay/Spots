@@ -75,19 +75,16 @@ This document tracks planned updates to be implemented across multiple branches 
 ---
 
 ### 2.2 Refactor quick add buttons
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/refactor-quick-add-buttons
 
 **Requirements:**
 - Remove `-` (minus) buttons from both visual view and table view
 - Add `+` (add non-foil) and `+Foil` (add foil) buttons
 - Card removal should only happen via the card detail modal
-- Ensures user knows which variant they're removing
 
 **Files affected:**
 - `src/Spots.App/src/pages/SetBrowserPage.tsx`
-- `src/Spots.App/src/pages/SearchPage.tsx`
-- `src/Spots.App/src/components/` (any shared card components)
 
 ---
 

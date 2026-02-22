@@ -19,7 +19,7 @@ A personal Magic: The Gathering collection tracker built as a single-container D
 - [ ] Dashboard - Add most expensive cards list (Top 10)
 - [x] Dashboard - Nearest to completion should list foil and non foil as separate items when collecting both
 - [ ] Spots - Add ability to move/reorder spots (Drag & drop?)
-- [ ] Add Cards - Add ability to add foils from visual view like on table view
+- [x] Add Cards - Add ability to add foils from visual view like on table view
 - [ ] Add Cards - Ability to set defaults for each add. E.g. define that all cards added will be allocated to a certain spot
 - [ ] Add Cards - Search results to be displayed in set number order when viewing by set
 - [ ] Add Cards - Implement bulk actions, multi select with ctrl + click. Then new buttons appear to allow 'Add' and 'Add foil' actions.

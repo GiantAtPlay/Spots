@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getSetCards, getSet, createCollectionEntry, deleteCollectionEntry, getCollection, getSpots } from '../api/client'
+import { getSetCards, getSet, createCollectionEntry, getCollection, getSpots } from '../api/client'
 import CardImage from '../components/CardImage'
 import ViewToggle from '../components/ViewToggle'
 import CardHoverPreview from '../components/CardHoverPreview'
@@ -73,20 +73,6 @@ export default function SetBrowserPage() {
     }
   }
 
-  const handleQuickRemove = async (cardId: number, isFoil = false) => {
-    const entries = collectionMap.get(cardId) ?? []
-    const entry = entries.find(e => e.isFoil === isFoil)
-    if (!entry) return
-    try {
-      await deleteCollectionEntry(entry.id)
-      const updated = new Map(collectionMap)
-      updated.set(cardId, entries.filter(e => e.id !== entry.id))
-      setCollectionMap(updated)
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -149,15 +135,13 @@ export default function SetBrowserPage() {
                   <p className="text-white text-xs font-medium truncate">{card.name}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleQuickRemove(card.id, false) }}
-                      disabled={stdCount === 0}
-                      className="text-white bg-red-500/80 hover:bg-red-500 disabled:opacity-30 w-6 h-6 rounded text-sm flex items-center justify-center"
-                    >-</button>
-                    <span className="text-white text-sm font-medium">{stdCount}</span>
-                    <button
                       onClick={(e) => { e.stopPropagation(); handleQuickAdd(card.id, false) }}
-                      className="text-white bg-green-500/80 hover:bg-green-500 w-6 h-6 rounded text-sm flex items-center justify-center"
-                    >+</button>
+                      className="text-white bg-primary-600 hover:bg-primary-500 px-2 py-1 rounded text-xs font-medium"
+                    >Add</button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleQuickAdd(card.id, true) }}
+                      className="text-white bg-amber-600 hover:bg-amber-500 px-2 py-1 rounded text-xs font-medium"
+                    >Add Foil</button>
                   </div>
                 </div>
               </div>
@@ -172,8 +156,7 @@ export default function SetBrowserPage() {
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-12">#</th>
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Name</th>
                 <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-24">Rarity</th>
-                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-28">Standard</th>
-                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-28">Foil</th>
+                <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-40">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -194,18 +177,10 @@ export default function SetBrowserPage() {
                           {card.rarity}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-center gap-1">
-                          <button onClick={() => handleQuickRemove(card.id, false)} disabled={stdCount === 0} className="btn-sm text-xs bg-gray-200 dark:bg-gray-600 rounded px-1.5 disabled:opacity-30">-</button>
-                          <span className="w-6 text-center font-medium">{stdCount}</span>
-                          <button onClick={() => handleQuickAdd(card.id, false)} className="btn-sm text-xs bg-gray-200 dark:bg-gray-600 rounded px-1.5">+</button>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-center gap-1">
-                          <button onClick={() => handleQuickRemove(card.id, true)} disabled={foilCount === 0} className="btn-sm text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded px-1.5 disabled:opacity-30">-</button>
-                          <span className="w-6 text-center font-medium">{foilCount}</span>
-                          <button onClick={() => handleQuickAdd(card.id, true)} className="btn-sm text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded px-1.5">+</button>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-1" onClick={e => e.stopPropagation()}>
+                          <button onClick={() => handleQuickAdd(card.id, false)} className="btn-sm text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded px-2 py-1">Add</button>
+                          <button onClick={() => handleQuickAdd(card.id, true)} className="btn-sm text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded px-2 py-1">Add Foil</button>
                         </div>
                       </td>
                   </CardHoverPreview>
