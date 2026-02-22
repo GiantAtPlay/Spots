@@ -171,6 +171,8 @@ export interface TrackerProgress {
   trackerId: number;
   trackerName: string;
   setCode?: string;
+  trackFoil: boolean;
+  trackNonFoil: boolean;
   completionPercentage: number;
   foilCompletionPercentage: number;
   nonFoilCompletionPercentage: number;

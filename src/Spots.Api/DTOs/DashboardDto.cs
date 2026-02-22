@@ -14,6 +14,8 @@ public class TrackerProgressDto
     public int TrackerId { get; set; }
     public string TrackerName { get; set; } = string.Empty;
     public string? SetCode { get; set; }
+    public bool TrackFoil { get; set; }
+    public bool TrackNonFoil { get; set; }
     public double CompletionPercentage { get; set; }
     public double FoilCompletionPercentage { get; set; }
     public double NonFoilCompletionPercentage { get; set; }

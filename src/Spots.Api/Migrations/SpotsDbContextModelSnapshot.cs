@@ -164,6 +164,9 @@ partial class SpotsDbContextModelSnapshot : ModelSnapshot
                     .IsRequired()
                     .HasColumnType("TEXT");
 
+                b.Property<int>("UserId")
+                    .HasColumnType("INTEGER");
+
                 b.HasKey("Id");
 
                 b.HasIndex("ParentSpotId");

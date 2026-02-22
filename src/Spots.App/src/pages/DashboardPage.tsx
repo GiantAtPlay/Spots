@@ -60,23 +60,25 @@ export default function DashboardPage() {
             Nearest to Complete
           </h2>
           <div className="space-y-4">
-            {dashboard.nearCompleteTrackers.map(tracker => (
-              <Link
-                key={tracker.trackerId}
-                to={`/trackers/${tracker.trackerId}`}
-                className="block hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-3 -mx-3 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {tracker.trackerName}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {tracker.collectedCards}/{tracker.totalCards}
-                  </span>
-                </div>
-                <ProgressBar percentage={tracker.completionPercentage} size="sm" />
-              </Link>
-            ))}
+            {dashboard.nearCompleteTrackers.map(tracker => {
+              const totalNeeded = tracker.trackFoil && tracker.trackNonFoil
+                ? tracker.totalCards * 2
+                : tracker.totalCards
+              return (
+                <Link
+                  key={tracker.trackerId}
+                  to={`/trackers/${tracker.trackerId}`}
+                  className="block hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-3 -mx-3 transition-colors"
+                >
+                  <ProgressBar
+                    percentage={tracker.completionPercentage}
+                    label={`${tracker.trackerName} (${tracker.collectedCards}/${totalNeeded})`}
+                    size="sm"
+                    color={tracker.trackFoil && !tracker.trackNonFoil ? 'bg-amber-500' : 'bg-primary-600'}
+                  />
+                </Link>
+              )
+            })}
           </div>
         </div>
       )}
@@ -94,20 +96,35 @@ export default function DashboardPage() {
                 to={`/trackers/${tracker.trackerId}`}
                 className="block hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-3 -mx-3 transition-colors"
               >
-                <ProgressBar
-                  percentage={tracker.completionPercentage}
-                  label={`${tracker.trackerName} (${tracker.collectedCards}/${tracker.totalCards})`}
-                />
-                {tracker.foilCompletionPercentage > 0 && (
-                  <div className="mt-1">
+                <div className="space-y-1">
+                  {tracker.trackFoil && tracker.trackNonFoil ? (
+                    <>
+                      <ProgressBar
+                        percentage={tracker.completionPercentage}
+                        label={`${tracker.trackerName} - Overall (${tracker.collectedCards}/${tracker.totalCards * 2})`}
+                        size="sm"
+                      />
+                      <ProgressBar
+                        percentage={tracker.nonFoilCompletionPercentage}
+                        label={`Non-Foil (${Math.round(tracker.nonFoilCompletionPercentage * tracker.totalCards / 100)}/${tracker.totalCards})`}
+                        size="sm"
+                      />
+                      <ProgressBar
+                        percentage={tracker.foilCompletionPercentage}
+                        label={`Foil (${Math.round(tracker.foilCompletionPercentage * tracker.totalCards / 100)}/${tracker.totalCards})`}
+                        size="sm"
+                        color="bg-amber-500"
+                      />
+                    </>
+                  ) : (
                     <ProgressBar
-                      percentage={tracker.foilCompletionPercentage}
-                      label="Foil"
+                      percentage={tracker.completionPercentage}
+                      label={`${tracker.trackerName} (${tracker.collectedCards}/${tracker.totalCards})`}
                       size="sm"
-                      color="bg-amber-500"
+                      color={tracker.trackFoil ? 'bg-amber-500' : 'bg-primary-600'}
                     />
-                  </div>
-                )}
+                  )}
+                </div>
               </Link>
             ))}
           </div>
