@@ -5,6 +5,88 @@ import ProgressBar from '../components/ProgressBar'
 import Modal from '../components/Modal'
 import type { Tracker, MtgSet } from '../types'
 
+type TrackerCardProps = {
+  tracker: Tracker
+  onEdit: (tracker: Tracker) => void
+  onDelete: (id: number) => void
+}
+
+function TrackerCard({ tracker, onEdit, onDelete }: TrackerCardProps) {
+  return (
+    <div className="card p-4">
+      <div className="flex items-start justify-between">
+        <Link
+          to={`/trackers/${tracker.id}`}
+          className="flex-1 hover:opacity-80 transition-opacity"
+        >
+          <div className="flex items-center gap-3">
+            <h3 className="font-semibold text-gray-900 dark:text-white">{tracker.name}</h3>
+            {tracker.setCode && (
+              <span className="badge bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-400">
+                {tracker.setCode.toUpperCase()}
+              </span>
+            )}
+            {!tracker.isCollecting && (
+              <span className="badge bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                Not collecting
+              </span>
+            )}
+          </div>
+          <div className="mt-2 space-y-1">
+            {tracker.trackFoil && tracker.trackNonFoil ? (
+              <>
+                <ProgressBar
+                  percentage={tracker.completionPercentage}
+                  label={`Overall (${tracker.collectedCards}/${tracker.totalCards * 2})`}
+                  size="sm"
+                />
+                <ProgressBar
+                  percentage={tracker.nonFoilCompletionPercentage}
+                  label={`Non-Foil (${Math.round(tracker.nonFoilCompletionPercentage * tracker.totalCards / 100)}/${tracker.totalCards})`}
+                  size="sm"
+                />
+                <ProgressBar
+                  percentage={tracker.foilCompletionPercentage}
+                  label={`Foil (${Math.round(tracker.foilCompletionPercentage * tracker.totalCards / 100)}/${tracker.totalCards})`}
+                  size="sm"
+                  color="bg-amber-500"
+                />
+              </>
+            ) : (
+              <ProgressBar
+                percentage={tracker.completionPercentage}
+                label={`Completion (${tracker.collectedCards}/${tracker.totalCards})`}
+                size="sm"
+                color={tracker.trackFoil ? 'bg-amber-500' : 'bg-primary-600'}
+              />
+            )}
+          </div>
+        </Link>
+        <div className="flex items-center gap-1 ml-4">
+          <button
+            onClick={() => onEdit(tracker)}
+            className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            title="Edit tracker"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          <button
+            onClick={() => onDelete(tracker.id)}
+            className="text-gray-400 hover:text-red-500 transition-colors"
+            title="Delete tracker"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function TrackersPage() {
   const [trackers, setTrackers] = useState<Tracker[]>([])
   const [loading, setLoading] = useState(true)
@@ -17,6 +99,7 @@ export default function TrackersPage() {
   // Filter state
   const [filter, setFilter] = useState<'all' | 'custom' | 'set'>('all')
   const [search, setSearch] = useState('')
+  const [order, setOrder] = useState<'alphabetical' | 'completion' | 'set'>('alphabetical')
 
   // Form state (shared for create)
   const [name, setName] = useState('')
@@ -38,7 +121,12 @@ export default function TrackersPage() {
       .finally(() => setLoading(false))
   }
 
-  useEffect(() => { loadTrackers() }, [])
+  useEffect(() => { 
+    loadTrackers()
+    if (sets.length === 0) {
+      getSets().then(setSets).catch(console.error)
+    }
+  }, [])
 
   const filteredTrackers = trackers.filter(tracker => {
     const matchesFilter = 
@@ -48,6 +136,29 @@ export default function TrackersPage() {
     const matchesSearch = tracker.name.toLowerCase().includes(search.toLowerCase())
     return matchesFilter && matchesSearch
   })
+
+  const sortedTrackers = [...filteredTrackers].sort((a, b) => {
+    if (order === 'alphabetical') {
+      return a.name.localeCompare(b.name)
+    }
+    if (order === 'completion') {
+      return b.completionPercentage - a.completionPercentage
+    }
+    if (order === 'set') {
+      if (!a.setCode && !b.setCode) return a.name.localeCompare(b.name)
+      if (!a.setCode) return 1
+      if (!b.setCode) return -1
+      const setA = sets.find(s => s.code === a.setCode)
+      const setB = sets.find(s => s.code === b.setCode)
+      const dateA = setA?.released_at ? new Date(setA.released_at).getTime() : 0
+      const dateB = setB?.released_at ? new Date(setB.released_at).getTime() : 0
+      return dateB - dateA
+    }
+    return 0
+  })
+
+  const pinnedTrackers = sortedTrackers.filter(t => t.isPinned)
+  const unpinnedTrackers = sortedTrackers.filter(t => !t.isPinned)
 
   const handleOpenCreate = async () => {
     setShowCreate(true)
@@ -145,6 +256,15 @@ export default function TrackersPage() {
             placeholder="Search trackers..."
             className="input flex-1"
           />
+          <select
+            value={order}
+            onChange={e => setOrder(e.target.value as 'alphabetical' | 'completion' | 'set')}
+            className="input w-auto"
+          >
+            <option value="alphabetical">A-Z</option>
+            <option value="completion">Completion</option>
+            <option value="set">Set Order</option>
+          </select>
         </div>
       )}
 
@@ -152,7 +272,7 @@ export default function TrackersPage() {
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
-      ) : filteredTrackers.length === 0 ? (
+      ) : sortedTrackers.length === 0 ? (
         <div className="card p-12 text-center">
           <p className="text-gray-500 dark:text-gray-400 mb-4">
             {search || filter !== 'all'
@@ -167,79 +287,32 @@ export default function TrackersPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filteredTrackers.map(tracker => (
-            <div key={tracker.id} className="card p-4">
-              <div className="flex items-start justify-between">
-                <Link
-                  to={`/trackers/${tracker.id}`}
-                  className="flex-1 hover:opacity-80 transition-opacity"
-                >
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">{tracker.name}</h3>
-                    {tracker.setCode && (
-                      <span className="badge bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-400">
-                        {tracker.setCode.toUpperCase()}
-                      </span>
-                    )}
-                    {!tracker.isCollecting && (
-                      <span className="badge bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
-                        Not collecting
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-2 space-y-1">
-                    {tracker.trackFoil && tracker.trackNonFoil ? (
-                      <>
-                        <ProgressBar
-                          percentage={tracker.completionPercentage}
-                          label={`Overall (${tracker.collectedCards}/${tracker.totalCards * 2})`}
-                          size="sm"
-                        />
-                        <ProgressBar
-                          percentage={tracker.nonFoilCompletionPercentage}
-                          label={`Non-Foil (${Math.round(tracker.nonFoilCompletionPercentage * tracker.totalCards / 100)}/${tracker.totalCards})`}
-                          size="sm"
-                        />
-                        <ProgressBar
-                          percentage={tracker.foilCompletionPercentage}
-                          label={`Foil (${Math.round(tracker.foilCompletionPercentage * tracker.totalCards / 100)}/${tracker.totalCards})`}
-                          size="sm"
-                          color="bg-amber-500"
-                        />
-                      </>
-                    ) : (
-                      <ProgressBar
-                        percentage={tracker.completionPercentage}
-                        label={`Completion (${tracker.collectedCards}/${tracker.totalCards})`}
-                        size="sm"
-                        color={tracker.trackFoil ? 'bg-amber-500' : 'bg-primary-600'}
-                      />
-                    )}
-                  </div>
-                </Link>
-                <div className="flex items-center gap-1 ml-4">
-                  <button
-                    onClick={() => handleOpenEdit(tracker)}
-                    className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                    title="Edit tracker"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => handleDelete(tracker.id)}
-                    className="text-gray-400 hover:text-red-500 transition-colors"
-                    title="Delete tracker"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
+          {pinnedTrackers.length > 0 && (
+            <>
+              <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Pinned
+              </h2>
+              <div className="space-y-3 mb-4">
+                {pinnedTrackers.map(tracker => (
+                  <TrackerCard key={tracker.id} tracker={tracker} onEdit={handleOpenEdit} onDelete={handleDelete} />
+                ))}
               </div>
-            </div>
-          ))}
+            </>
+          )}
+          {unpinnedTrackers.length > 0 && (
+            <>
+              {pinnedTrackers.length > 0 && (
+                <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  All Trackers
+                </h2>
+              )}
+              <div className="space-y-3">
+                {unpinnedTrackers.map(tracker => (
+                  <TrackerCard key={tracker.id} tracker={tracker} onEdit={handleOpenEdit} onDelete={handleDelete} />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
 
