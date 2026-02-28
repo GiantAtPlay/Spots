@@ -239,32 +239,34 @@ export default function TrackersPage() {
       </div>
 
       {trackers.length > 0 && (
-        <div className="flex items-center gap-4">
-          <select
-            value={filter}
-            onChange={e => setFilter(e.target.value as 'all' | 'custom' | 'set')}
-            className="input w-auto"
-          >
-            <option value="all">All</option>
-            <option value="custom">Custom</option>
-            <option value="set">Set</option>
-          </select>
+        <div className="flex items-center justify-between gap-8">
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search trackers..."
-            className="input flex-1"
+            className="input w-[45%]"
           />
-          <select
-            value={order}
-            onChange={e => setOrder(e.target.value as 'alphabetical' | 'completion' | 'set')}
-            className="input w-auto"
-          >
-            <option value="alphabetical">A-Z</option>
-            <option value="completion">Completion</option>
-            <option value="set">Set Order</option>
-          </select>
+          <div className="flex items-center gap-4">
+            <select
+              value={filter}
+              onChange={e => setFilter(e.target.value as 'all' | 'custom' | 'set')}
+              className="input w-auto"
+            >
+              <option value="all">All</option>
+              <option value="custom">Custom</option>
+              <option value="set">Set</option>
+            </select>
+            <select
+              value={order}
+              onChange={e => setOrder(e.target.value as 'alphabetical' | 'completion' | 'set')}
+              className="input w-auto"
+            >
+              <option value="alphabetical">A-Z</option>
+              <option value="completion">Completion</option>
+              <option value="set">Set Order</option>
+            </select>
+          </div>
         </div>
       )}
 
