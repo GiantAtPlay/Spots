@@ -60,25 +60,29 @@ export default function TrackerAddCardsPage() {
   const handleAddCard = async (cardId: string) => {
     if (addingCards.has(cardId)) return
 
-    setAddingCards(new Set(addingCards).add(cardId))
+    const newAddingCards = new Set(addingCards).add(cardId)
+    setAddingCards(newAddingCards)
 
     try {
       await addTrackerCard(trackerId, undefined, cardId)
       setExistingCards(new Set(existingCards).add(cardId))
+      newAddingCards.delete(cardId)
+      setAddingCards(newAddingCards)
       setAddedMessage(`Added card to tracker`)
       setTimeout(() => setAddedMessage(null), 2000)
     } catch (e) {
       console.error(e)
-      const newSet = new Set(addingCards)
-      newSet.delete(cardId)
-      setAddingCards(newSet)
+      const errorSet = new Set(addingCards)
+      errorSet.delete(cardId)
+      setAddingCards(errorSet)
     }
   }
 
   const handleRemoveCard = async (cardId: string) => {
     if (addingCards.has(cardId)) return
 
-    setAddingCards(new Set(addingCards).add(cardId))
+    const newAddingCards = new Set(addingCards).add(cardId)
+    setAddingCards(newAddingCards)
     try {
       const cards = await getTrackerCards(trackerId)
       const trackerCard = cards.find(c => c.scryfallId === cardId)
@@ -87,14 +91,16 @@ export default function TrackerAddCardsPage() {
         const newExisting = new Set(existingCards)
         newExisting.delete(cardId)
         setExistingCards(newExisting)
+        newAddingCards.delete(cardId)
+        setAddingCards(newAddingCards)
         setAddedMessage(`Removed card from tracker`)
         setTimeout(() => setAddedMessage(null), 2000)
       }
     } catch (e) {
       console.error(e)
-      const newSet = new Set(addingCards)
-      newSet.delete(cardId)
-      setAddingCards(newSet)
+      const errorSet = new Set(addingCards)
+      errorSet.delete(cardId)
+      setAddingCards(errorSet)
     }
   }
 
