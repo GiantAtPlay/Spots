@@ -1,11 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Spots.Api.Data;
 
 #nullable disable
 
-namespace Spots.Api.Migrations
+namespace Spots.Api.Migrations;
+
+[DbContext(typeof(SpotsDbContext))]
+[Migration("20260228120000_AddIsPinnedToTrackers")]
+public partial class AddIsPinnedToTrackers : Migration
 {
-    public partial class AddIsPinnedToTrackers : Migration
-    {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
@@ -22,5 +27,4 @@ namespace Spots.Api.Migrations
                 name: "IsPinned",
                 table: "Trackers");
         }
-    }
 }
