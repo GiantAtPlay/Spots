@@ -179,20 +179,17 @@ public class TrackersController : ControllerBase
             card = await _db.Cards.FirstOrDefaultAsync(c => c.ScryfallId == dto.ScryfallId);
             if (card == null)
             {
-                // Card not in DB - try to import from Scryfall
-                // Extract set code from ScryfallId - we need to search for it
-                var scryfallService = HttpContext.RequestServices.GetRequiredService<Services.ScryfallService>();
                 try
                 {
                     // Search for the card to get its set
-                    var searchResult = await scryfallService.SearchCardsAsync($"id:{dto.ScryfallId}");
+                    var searchResult = await _scryfallService.SearchCardsAsync($"id:{dto.ScryfallId}");
                     var scryfallCard = searchResult.Cards.FirstOrDefault();
                     if (scryfallCard == null)
                     {
                         return BadRequest("Card not found in Scryfall");
                     }
                     // Import the set
-                    await scryfallService.ImportSetCardsToDbAsync(scryfallCard.Set);
+                    await _scryfallService.ImportSetCardsToDbAsync(scryfallCard.Set);
                     // Now get the card
                     card = await _db.Cards.FirstOrDefaultAsync(c => c.ScryfallId == dto.ScryfallId);
                 }
