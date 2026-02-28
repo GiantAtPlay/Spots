@@ -21,6 +21,33 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return text ? JSON.parse(text) : (undefined as unknown as T);
 }
 
+// Backup
+export const downloadBackup = async () => {
+  const url = `${BASE_URL}/settings/backup`;
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error || 'Failed to download backup');
+  }
+
+  const blob = await response.blob();
+  const downloadUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  
+  const contentDisposition = response.headers.get('Content-Disposition');
+  const filename = contentDisposition
+    ? contentDisposition.split('filename=')[1]?.replace(/"/g, '') || 'spots-backup.db'
+    : 'spots-backup.db';
+  
+  a.href = downloadUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(downloadUrl);
+};
+
 // Dashboard
 export const getDashboard = () =>
   request<import('../types').Dashboard>('/dashboard');
