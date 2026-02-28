@@ -109,6 +109,7 @@ export interface Tracker {
   trackFoil: boolean;
   trackNonFoil: boolean;
   isCollecting: boolean;
+  isPinned: boolean;
   createdAt: string;
   completionPercentage: number;
   foilCompletionPercentage: number;
