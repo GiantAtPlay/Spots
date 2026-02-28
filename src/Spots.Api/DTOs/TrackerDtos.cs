@@ -38,6 +38,7 @@ public class TrackerCardDto
 {
     public int Id { get; set; }
     public int CardId { get; set; }
+    public string? ScryfallId { get; set; }
     public string CardName { get; set; } = string.Empty;
     public string SetCode { get; set; } = string.Empty;
     public string SetName { get; set; } = string.Empty;
@@ -54,5 +55,6 @@ public class TrackerCardDto
 
 public class AddTrackerCardDto
 {
-    public int CardId { get; set; }
+    public int? CardId { get; set; }
+    public string? ScryfallId { get; set; }
 }

@@ -50,10 +50,10 @@ export const deleteTracker = (id: number) =>
 export const getTrackerCards = (id: number) =>
   request<import('../types').TrackerCard[]>(`/trackers/${id}/cards`);
 
-export const addTrackerCard = (trackerId: number, cardId: number) =>
+export const addTrackerCard = (trackerId: number, cardId: number, scryfallId?: string) =>
   request<void>(`/trackers/${trackerId}/cards`, {
     method: 'POST',
-    body: JSON.stringify({ cardId }),
+    body: JSON.stringify({ cardId, scryfallId }),
   });
 
 export const removeTrackerCard = (trackerId: number, cardId: number) =>

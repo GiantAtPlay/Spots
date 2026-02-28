@@ -5,6 +5,7 @@ import { SettingsContext } from './components/SettingsContext'
 import DashboardPage from './pages/DashboardPage'
 import TrackersPage from './pages/TrackersPage'
 import TrackerDetailPage from './pages/TrackerDetailPage'
+import TrackerAddCardsPage from './pages/TrackerAddCardsPage'
 import CollectionPage from './pages/CollectionPage'
 import TradePage from './pages/TradePage'
 import SpotsPage from './pages/SpotsPage'
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/trackers" element={<TrackersPage />} />
           <Route path="/trackers/:id" element={<TrackerDetailPage />} />
+          <Route path="/trackers/:id/add-cards" element={<TrackerAddCardsPage />} />
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/trade" element={<TradePage />} />
           <Route path="/spots" element={<SpotsPage />} />
