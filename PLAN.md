@@ -331,8 +331,8 @@ This document tracks planned updates to be implemented across multiple branches 
 ---
 
 ### 6.3 Pin trackers
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/pin-trackers
 
 **Requirements:**
 - Add "Pin" button/icon to each tracker
@@ -343,8 +343,10 @@ This document tracks planned updates to be implemented across multiple branches 
 
 **Files affected:**
 - `src/Spots.Api/Models/Tracker.cs`
+- `src/Spots.Api/DTOs/TrackerDtos.cs`
 - `src/Spots.Api/Controllers/TrackersController.cs`
 - `src/Spots.App/src/pages/TrackersPage.tsx`
+- `src/Spots.App/src/types/index.ts`
 - Database migration
 
 ---
