@@ -291,29 +291,54 @@ This document tracks planned updates to be implemented across multiple branches 
 
 ## Phase 6: Trackers Enhancements
 
-### 6.1 Search trackers
-**Status:** Pending
-**Branch:** TBD
+### 6.1 Search & filter trackers
+**Status:** Completed
+**Branch:** feature/search-filter-trackers
 
 **Requirements:**
-- Add search/filter input to trackers list page
-- Filter by tracker name
-- Client-side filtering (no backend changes needed)
+- Add search/filter bar to trackers list page (beneath header and Add button)
+- Filter dropdown: "All", "Custom", "Set"
+- Search input: filter by tracker name (client-side)
+- Filter and search displayed in same row, visually inline
+- Search input and filter dropdown are separate UI elements
 
 **Files affected:**
 - `src/Spots.App/src/pages/TrackersPage.tsx`
 
 ---
 
-### 6.2 Pin trackers
+### 6.2 Order trackers
+**Status:** Pending
+**Branch:** TBD
+
+**Requirements:**
+- Add order dropdown to trackers list page (inline with search/filter)
+- Order options:
+  - Alphabetical (A-Z) - default
+  - Total Completion (highest % first)
+  - Set Order (by set release date from Scryfall)
+- When ordering by Set Order: custom trackers grouped at bottom of list
+- Pinned trackers:
+  - Displayed in a sticky section at top (visually identifiable)
+  - Also duplicated in the main sorted list below
+  - Sticky section clearly differentiated from main list
+
+**Files affected:**
+- `src/Spots.App/src/pages/TrackersPage.tsx`
+- `src/Spots.Api/Controllers/TrackersController.cs` (if ordering requires backend)
+
+---
+
+### 6.3 Pin trackers
 **Status:** Pending
 **Branch:** TBD
 
 **Requirements:**
 - Add "Pin" button/icon to each tracker
-- Pinned trackers float to top of list
 - Store pinned status in database (add `IsPinned` field to Tracker model)
 - Show pin icon visually to indicate pinned status
+- Pinned trackers appear in a sticky section at top AND in the main sorted list (see 6.2)
+- Sticky section visually distinguishable from main list
 
 **Files affected:**
 - `src/Spots.Api/Models/Tracker.cs`
@@ -323,7 +348,7 @@ This document tracks planned updates to be implemented across multiple branches 
 
 ---
 
-### 6.3 Import to custom tracker
+### 6.4 Import to custom tracker
 **Status:** Pending
 **Branch:** TBD
 

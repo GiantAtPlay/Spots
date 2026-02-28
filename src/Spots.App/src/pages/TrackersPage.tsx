@@ -14,6 +14,10 @@ export default function TrackersPage() {
   const [editingTracker, setEditingTracker] = useState<Tracker | null>(null)
   const [saving, setSaving] = useState(false)
 
+  // Filter state
+  const [filter, setFilter] = useState<'all' | 'custom' | 'set'>('all')
+  const [search, setSearch] = useState('')
+
   // Form state (shared for create)
   const [name, setName] = useState('')
   const [setCode, setSetCode] = useState('')
@@ -35,6 +39,15 @@ export default function TrackersPage() {
   }
 
   useEffect(() => { loadTrackers() }, [])
+
+  const filteredTrackers = trackers.filter(tracker => {
+    const matchesFilter = 
+      filter === 'all' || 
+      (filter === 'custom' && !tracker.setCode) ||
+      (filter === 'set' && !!tracker.setCode)
+    const matchesSearch = tracker.name.toLowerCase().includes(search.toLowerCase())
+    return matchesFilter && matchesSearch
+  })
 
   const handleOpenCreate = async () => {
     setShowCreate(true)
@@ -114,22 +127,47 @@ export default function TrackersPage() {
         </button>
       </div>
 
+      {trackers.length > 0 && (
+        <div className="flex items-center gap-4">
+          <select
+            value={filter}
+            onChange={e => setFilter(e.target.value as 'all' | 'custom' | 'set')}
+            className="input w-auto"
+          >
+            <option value="all">All</option>
+            <option value="custom">Custom</option>
+            <option value="set">Set</option>
+          </select>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search trackers..."
+            className="input flex-1"
+          />
+        </div>
+      )}
+
       {loading ? (
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
-      ) : trackers.length === 0 ? (
+      ) : filteredTrackers.length === 0 ? (
         <div className="card p-12 text-center">
           <p className="text-gray-500 dark:text-gray-400 mb-4">
-            No trackers yet. Create one from an MTG set or start a custom tracker.
+            {search || filter !== 'all'
+              ? 'No trackers match your search or filter.'
+              : 'No trackers yet. Create one from an MTG set or start a custom tracker.'}
           </p>
-          <button onClick={handleOpenCreate} className="btn-primary">
-            Create Your First Tracker
-          </button>
+          {!search && filter === 'all' && (
+            <button onClick={handleOpenCreate} className="btn-primary">
+              Create Your First Tracker
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-3">
-          {trackers.map(tracker => (
+          {filteredTrackers.map(tracker => (
             <div key={tracker.id} className="card p-4">
               <div className="flex items-start justify-between">
                 <Link
