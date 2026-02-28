@@ -331,8 +331,8 @@ This document tracks planned updates to be implemented across multiple branches 
 ---
 
 ### 6.3 Pin trackers
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/pin-trackers
 
 **Requirements:**
 - Add "Pin" button/icon to each tracker
@@ -343,8 +343,10 @@ This document tracks planned updates to be implemented across multiple branches 
 
 **Files affected:**
 - `src/Spots.Api/Models/Tracker.cs`
+- `src/Spots.Api/DTOs/TrackerDtos.cs`
 - `src/Spots.Api/Controllers/TrackersController.cs`
 - `src/Spots.App/src/pages/TrackersPage.tsx`
+- `src/Spots.App/src/types/index.ts`
 - Database migration
 
 ---
@@ -457,6 +459,25 @@ This document tracks planned updates to be implemented across multiple branches 
 - Each item to be tackled individually in separate branches
 - Update status in this document when starting/completing items
 - Run lint/typecheck before committing
+
+### Database Migrations
+When creating new migrations, ensure the migration class includes the required attributes:
+```csharp
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Spots.Api.Data;
+
+[DbContext(typeof(SpotsDbContext))]
+[Migration("YYYYMMDDHHMMSS_MigrationName")]
+public partial class MigrationName : Migration
+{
+    // ...
+}
+```
+- Missing `[DbContext]` or `[Migration]` attributes will cause EF to skip the migration silently
+- Always regenerate the snapshot file after creating migrations (or verify it includes the new migration)
+- Test migrations by running `docker-compose down -v && docker-compose up` to ensure fresh database applies all migrations
 
 ### Environment Variables
 - `OPENEXCHANGERATES_API_KEY` - Required for GBP currency conversion

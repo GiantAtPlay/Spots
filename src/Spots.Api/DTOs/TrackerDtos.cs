@@ -8,6 +8,7 @@ public class TrackerDto
     public bool TrackFoil { get; set; }
     public bool TrackNonFoil { get; set; }
     public bool IsCollecting { get; set; }
+    public bool IsPinned { get; set; }
     public DateTime CreatedAt { get; set; }
     public double CompletionPercentage { get; set; }
     public double FoilCompletionPercentage { get; set; }
@@ -30,6 +31,7 @@ public class UpdateTrackerDto
     public bool? TrackFoil { get; set; }
     public bool? TrackNonFoil { get; set; }
     public bool? IsCollecting { get; set; }
+    public bool? IsPinned { get; set; }
 }
 
 public class TrackerCardDto

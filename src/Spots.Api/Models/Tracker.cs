@@ -8,6 +8,7 @@ public class Tracker
     public bool TrackFoil { get; set; }
     public bool TrackNonFoil { get; set; } = true;
     public bool IsCollecting { get; set; } = true;
+    public bool IsPinned { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation

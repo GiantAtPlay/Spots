@@ -98,6 +98,7 @@ public class TrackersController : ControllerBase
         if (dto.TrackFoil.HasValue) tracker.TrackFoil = dto.TrackFoil.Value;
         if (dto.TrackNonFoil.HasValue) tracker.TrackNonFoil = dto.TrackNonFoil.Value;
         if (dto.IsCollecting.HasValue) tracker.IsCollecting = dto.IsCollecting.Value;
+        if (dto.IsPinned.HasValue) tracker.IsPinned = dto.IsPinned.Value;
 
         await _db.SaveChangesAsync();
         return Ok(await MapTrackerToDto(tracker));
@@ -275,6 +276,7 @@ public class TrackersController : ControllerBase
             TrackFoil = tracker.TrackFoil,
             TrackNonFoil = tracker.TrackNonFoil,
             IsCollecting = tracker.IsCollecting,
+            IsPinned = tracker.IsPinned,
             CreatedAt = tracker.CreatedAt,
             TotalCards = totalCards,
             CollectedCards = overallCollected,
