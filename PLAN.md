@@ -308,8 +308,8 @@ This document tracks planned updates to be implemented across multiple branches 
 ---
 
 ### 6.2 Order trackers
-**Status:** Pending
-**Branch:** TBD
+**Status:** Completed
+**Branch:** feature/order-trackers
 
 **Requirements:**
 - Add order dropdown to trackers list page (inline with search/filter)
@@ -325,6 +325,7 @@ This document tracks planned updates to be implemented across multiple branches 
 
 **Files affected:**
 - `src/Spots.App/src/pages/TrackersPage.tsx`
+- `src/Spots.App/src/types/index.ts`
 - `src/Spots.Api/Controllers/TrackersController.cs` (if ordering requires backend)
 
 ---
