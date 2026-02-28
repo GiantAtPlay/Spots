@@ -220,6 +220,9 @@ partial class SpotsDbContextModelSnapshot : ModelSnapshot
                 b.Property<bool>("IsCollecting")
                     .HasColumnType("INTEGER");
 
+                b.Property<bool>("IsPinned")
+                    .HasColumnType("INTEGER");
+
                 b.Property<string>("Name")
                     .IsRequired()
                     .HasColumnType("TEXT");
