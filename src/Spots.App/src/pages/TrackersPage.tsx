@@ -9,9 +9,10 @@ type TrackerCardProps = {
   tracker: Tracker
   onEdit: (tracker: Tracker) => void
   onDelete: (id: number) => void
+  onTogglePin: (tracker: Tracker) => void
 }
 
-function TrackerCard({ tracker, onEdit, onDelete }: TrackerCardProps) {
+function TrackerCard({ tracker, onEdit, onDelete, onTogglePin }: TrackerCardProps) {
   return (
     <div className="card p-4">
       <div className="flex items-start justify-between">
@@ -63,6 +64,19 @@ function TrackerCard({ tracker, onEdit, onDelete }: TrackerCardProps) {
           </div>
         </Link>
         <div className="flex items-center gap-1 ml-4">
+          <button
+            onClick={() => onTogglePin(tracker)}
+            className={`p-1 rounded transition-colors ${
+              tracker.isPinned
+                ? 'text-primary-600 dark:text-primary-400'
+                : 'text-gray-400 hover:text-primary-600 dark:hover:text-primary-400'
+            }`}
+            title={tracker.isPinned ? 'Unpin tracker' : 'Pin tracker'}
+          >
+            <svg className="w-5 h-5" fill={tracker.isPinned ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+          </button>
           <button
             onClick={() => onEdit(tracker)}
             className="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
@@ -229,6 +243,15 @@ export default function TrackersPage() {
     }
   }
 
+  const handleTogglePin = async (tracker: Tracker) => {
+    try {
+      await updateTracker(tracker.id, { isPinned: !tracker.isPinned })
+      loadTrackers()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -296,7 +319,7 @@ export default function TrackersPage() {
               </h2>
               <div className="space-y-3 mb-4">
                 {pinnedTrackers.map(tracker => (
-                  <TrackerCard key={tracker.id} tracker={tracker} onEdit={handleOpenEdit} onDelete={handleDelete} />
+                  <TrackerCard key={tracker.id} tracker={tracker} onEdit={handleOpenEdit} onDelete={handleDelete} onTogglePin={handleTogglePin} />
                 ))}
               </div>
             </>
@@ -310,7 +333,7 @@ export default function TrackersPage() {
               )}
               <div className="space-y-3">
                 {unpinnedTrackers.map(tracker => (
-                  <TrackerCard key={tracker.id} tracker={tracker} onEdit={handleOpenEdit} onDelete={handleDelete} />
+                  <TrackerCard key={tracker.id} tracker={tracker} onEdit={handleOpenEdit} onDelete={handleDelete} onTogglePin={handleTogglePin} />
                 ))}
               </div>
             </>
