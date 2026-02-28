@@ -16,8 +16,7 @@ A personal Magic: The Gathering collection tracker built as a single-container D
 
 ## To-do list
 - [ ] Spots - Add ability to move/reorder spots (Drag & drop?)
-- [ ] Tracker - Add ability to add cards to custom trackers, via search and through text import
-- [ ] Settings - Implement the ability to backup the database.
+- [ ] Tracker - Add ability to add cards to custom trackers, via text import
 - [ ] Settings - Allow selection of currency to display card values in
 
 
