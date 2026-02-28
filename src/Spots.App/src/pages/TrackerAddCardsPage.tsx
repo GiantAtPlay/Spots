@@ -63,7 +63,7 @@ export default function TrackerAddCardsPage() {
     setAddingCards(new Set(addingCards).add(cardId))
 
     try {
-      await addTrackerCard(trackerId, 0, cardId)
+      await addTrackerCard(trackerId, undefined, cardId)
       setExistingCards(new Set(existingCards).add(cardId))
       setAddedMessage(`Added card to tracker`)
       setTimeout(() => setAddedMessage(null), 2000)
