@@ -128,6 +128,7 @@ export interface CreateTracker {
 export interface TrackerCard {
   id: number;
   cardId: number;
+  scryfallId?: string;
   cardName: string;
   setCode: string;
   setName: string;

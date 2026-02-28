@@ -352,25 +352,25 @@ This document tracks planned updates to be implemented across multiple branches 
 ---
 
 ### 6.4 Add Cards to Custom Tracker
-**Status:** Pending
-**Branch:** TBD
+**Status:** In Progress
+**Branch:** feature/add-cards-to-custom-tracker
 
 **Requirements:**
 Add ability to add cards to custom trackers. This requires creating a new page for searching and adding cards.
 
-**6.4.1 Add "Add Cards" link to custom tracker detail page**
+**6.4.1 Add "Add Cards" link to custom tracker detail page** - COMPLETED
 - Add navigation link/button in tracker header (only for custom trackers)
 - Position: alongside Edit, Export, Collecting toggle buttons
 - Links to new add-cards page
 
-**6.4.2 Create TrackerAddCardsPage** (`/trackers/:id/add-cards`)
+**6.4.2 Create TrackerAddCardsPage** (`/trackers/:id/add-cards`) - COMPLETED
 - Search input to find cards by name (uses Scryfall API or existing card search)
 - Results displayed as grid/list (similar to SetBrowserPage)
 - "Add" button on each card to add to tracker
 - Show which cards are already in tracker
 - Support both grid view and list/table view toggle
 
-**6.4.3 Import cards to custom tracker (modal)**
+**6.4.3 Import cards to custom tracker (modal)** - Pending
 - Accessible via button on TrackerAddCardsPage
 - Modal with textarea for plain text list
 - Format: one card name per line

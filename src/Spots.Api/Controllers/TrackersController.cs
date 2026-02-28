@@ -13,11 +13,13 @@ public class TrackersController : ControllerBase
 {
     private readonly SpotsDbContext _db;
     private readonly IScryfallService _scryfallService;
+    private readonly ILogger<TrackersController> _logger;
 
-    public TrackersController(SpotsDbContext db, IScryfallService scryfallService)
+    public TrackersController(SpotsDbContext db, IScryfallService scryfallService, ILogger<TrackersController> logger)
     {
         _db = db;
         _scryfallService = scryfallService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -141,6 +143,7 @@ public class TrackersController : ControllerBase
             {
                 Id = tc.Id,
                 CardId = tc.CardId,
+                ScryfallId = tc.Card.ScryfallId,
                 CardName = tc.Card.Name,
                 SetCode = tc.Card.SetCode,
                 SetName = tc.Card.SetName,
@@ -165,16 +168,74 @@ public class TrackersController : ControllerBase
         var tracker = await _db.Trackers.FindAsync(id);
         if (tracker == null) return NotFound();
 
-        var card = await _db.Cards.FindAsync(dto.CardId);
-        if (card == null) return BadRequest("Card not found");
+        _logger.LogInformation("Adding card to tracker {TrackerId}. CardId: {CardId}, ScryfallId: {ScryfallId}", 
+            id, dto.CardId, dto.ScryfallId);
 
-        var exists = await _db.TrackerCards.AnyAsync(tc => tc.TrackerId == id && tc.CardId == dto.CardId);
+        Card? card = null;
+
+        // If CardId provided, use it directly
+        if (dto.CardId.HasValue)
+        {
+            card = await _db.Cards.FindAsync(dto.CardId.Value);
+            _logger.LogInformation("Card found by ID: {Found}", card != null);
+        }
+        // If ScryfallId provided, try to find or import the card
+        else if (!string.IsNullOrEmpty(dto.ScryfallId))
+        {
+            card = await _db.Cards.FirstOrDefaultAsync(c => c.ScryfallId == dto.ScryfallId);
+            if (card == null)
+            {
+                try
+                {
+                    _logger.LogInformation("Card not found in DB, fetching from Scryfall. ScryfallId: {ScryfallId}", dto.ScryfallId);
+                    // Get card directly from Scryfall by ID
+                    var scryfallCard = await _scryfallService.GetCardByIdAsync(dto.ScryfallId);
+                    if (scryfallCard == null)
+                    {
+                        _logger.LogWarning("Card not found in Scryfall. ScryfallId: {ScryfallId}", dto.ScryfallId);
+                        return BadRequest("Card not found in Scryfall");
+                    }
+                    _logger.LogInformation("Found card in Scryfall. Name: {Name}, Set: {Set}", scryfallCard.Name, scryfallCard.Set);
+                    // Import the set
+                    var setCode = scryfallCard.Set ?? string.Empty;
+                    if (string.IsNullOrEmpty(setCode))
+                    {
+                        _logger.LogError("Scryfall card has no set code. ScryfallId: {ScryfallId}", dto.ScryfallId);
+                        return BadRequest("Card has no set code");
+                    }
+                    await _scryfallService.ImportSetCardsToDbAsync(setCode);
+                    _logger.LogInformation("Imported set {Set}", setCode);
+                    // Now get the card
+                    card = await _db.Cards.FirstOrDefaultAsync(c => c.ScryfallId == dto.ScryfallId);
+                    _logger.LogInformation("After import: card found = {Found}, Card ID = {CardId}", card != null, card?.Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error importing card from Scryfall");
+                    return BadRequest($"Could not import card from Scryfall: {ex.Message}");
+                }
+            }
+        }
+        else
+        {
+            _logger.LogWarning("No CardId or ScryfallId provided");
+            return BadRequest("Either CardId or ScryfallId must be provided");
+        }
+
+        if (card == null)
+        {
+            _logger.LogWarning("Card is null after all attempts. ScryfallId: {ScryfallId}, CardId: {CardId}", 
+                dto.ScryfallId, dto.CardId);
+            return BadRequest("Card not found");
+        }
+
+        var exists = await _db.TrackerCards.AnyAsync(tc => tc.TrackerId == id && tc.CardId == card.Id);
         if (exists) return Conflict("Card already in tracker");
 
         _db.TrackerCards.Add(new TrackerCard
         {
             TrackerId = id,
-            CardId = dto.CardId,
+            CardId = card.Id,
             IsExcluded = false
         });
 

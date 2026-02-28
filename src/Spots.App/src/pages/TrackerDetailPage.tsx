@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getTracker, getTrackerCards, toggleExcludeCard, exportTrackerMissing, updateTracker } from '../api/client'
 import ProgressBar from '../components/ProgressBar'
 import ViewToggle from '../components/ViewToggle'
@@ -154,6 +154,11 @@ export default function TrackerDetailPage() {
           )}
         </div>
         <div className="flex gap-2">
+          {!tracker.setCode && (
+            <Link to={`/trackers/${tracker.id}/add-cards`} className="btn-primary btn-sm">
+              Add Cards
+            </Link>
+          )}
           <button onClick={handleOpenEdit} className="btn-secondary btn-sm">
             Edit
           </button>

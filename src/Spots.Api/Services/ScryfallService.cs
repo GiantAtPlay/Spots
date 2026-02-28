@@ -77,6 +77,8 @@ public class ScryfallService : IScryfallService
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
+
+            if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning("Failed to fetch cards for set {SetCode}: {Status}", setCode, response.StatusCode);
                 break;
@@ -133,6 +135,17 @@ public class ScryfallService : IScryfallService
         var json = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<ScryfallAutocompleteResponse>(json, JsonOptions);
         return result?.Data ?? new List<string>();
+    }
+
+    public async Task<ScryfallCardDto?> GetCardByIdAsync(string scryfallId)
+    {
+        await RateLimitAsync();
+        var response = await _httpClient.GetAsync($"cards/{scryfallId}");
+
+        if (!response.IsSuccessStatusCode) return null;
+
+        var json = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<ScryfallCardDto>(json, JsonOptions);
     }
 
     public async Task ImportSetCardsToDbAsync(string setCode)
