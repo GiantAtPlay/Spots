@@ -351,20 +351,40 @@ This document tracks planned updates to be implemented across multiple branches 
 
 ---
 
-### 6.4 Import to custom tracker
+### 6.4 Add Cards to Custom Tracker
 **Status:** Pending
 **Branch:** TBD
 
 **Requirements:**
-- Add import button to custom tracker detail page
-- Accept plain text list format (one card name per line)
-- Match cards by name and add to tracker
-- Handle cards not found in database (show warning)
-- Import format: Plain text, one card name per line
+Add ability to add cards to custom trackers. This requires creating a new page for searching and adding cards.
+
+**6.4.1 Add "Add Cards" link to custom tracker detail page**
+- Add navigation link/button in tracker header (only for custom trackers)
+- Position: alongside Edit, Export, Collecting toggle buttons
+- Links to new add-cards page
+
+**6.4.2 Create TrackerAddCardsPage** (`/trackers/:id/add-cards`)
+- Search input to find cards by name (uses Scryfall API or existing card search)
+- Results displayed as grid/list (similar to SetBrowserPage)
+- "Add" button on each card to add to tracker
+- Show which cards are already in tracker
+- Support both grid view and list/table view toggle
+
+**6.4.3 Import cards to custom tracker (modal)**
+- Accessible via button on TrackerAddCardsPage
+- Modal with textarea for plain text list
+- Format: one card name per line
+- Match cards against Scryfall/database
+- Handle cards not found (show warning list)
+- Bulk add all matched cards to tracker
+- Show success/error summary after import
+
+**Note:** This replaces the previous simpler "Import to custom tracker" requirement.
 
 **Files affected:**
-- `src/Spots.Api/Controllers/TrackersController.cs` (new import endpoint)
+- `src/Spots.App/src/pages/TrackerAddCardsPage.tsx` (new)
 - `src/Spots.App/src/pages/TrackerDetailPage.tsx`
+- `src/Spots.Api/Controllers/TrackersController.cs` (new import endpoint)
 
 ---
 
