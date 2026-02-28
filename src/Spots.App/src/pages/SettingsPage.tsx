@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getSettings, updateSettings, getSyncSettings, updateSyncSettings, getSyncStatus, triggerSync, resetCollection } from '../api/client'
+import { getSettings, updateSettings, getSyncSettings, updateSyncSettings, getSyncStatus, triggerSync, resetCollection, downloadBackup } from '../api/client'
 import type { UserSettings, SyncSettings, SyncStatus } from '../types'
 
 export default function SettingsPage() {
@@ -115,91 +115,126 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Sync Settings */}
-      <div className="card p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Data Sync</h2>
+      {/* Data Management */}
+      <div className="card p-6 space-y-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Data Management</h2>
 
-        {/* Sync Status */}
-        <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-700/30">
+        {/* Data Sync */}
+        <div className="space-y-4">
+          <h3 className="text-md font-medium text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">Data Sync</h3>
+
+          {/* Sync Status */}
+          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-700/30">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  {syncStatus?.isSyncing ? 'Syncing...' : 'Sync Status'}
+                </p>
+                {syncStatus?.syncStatus && (
+                  <p className="text-sm text-primary-600 dark:text-primary-400">{syncStatus.syncStatus}</p>
+                )}
+                {syncStatus?.lastCardSync && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Last card sync: {new Date(syncStatus.lastCardSync).toLocaleString()}
+                  </p>
+                )}
+                {syncStatus?.lastPriceSync && (
+                  <p className="text-xs text-gray-500">
+                    Last price sync: {new Date(syncStatus.lastPriceSync).toLocaleString()}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={handleTriggerSync}
+                disabled={syncStatus?.isSyncing}
+                className="btn-primary btn-sm"
+              >
+                {syncStatus?.isSyncing ? (
+                  <span className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                    Syncing
+                  </span>
+                ) : 'Sync Now'}
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                {syncStatus?.isSyncing ? 'Syncing...' : 'Sync Status'}
-              </p>
-              {syncStatus?.syncStatus && (
-                <p className="text-sm text-primary-600 dark:text-primary-400">{syncStatus.syncStatus}</p>
-              )}
-              {syncStatus?.lastCardSync && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Last card sync: {new Date(syncStatus.lastCardSync).toLocaleString()}
-                </p>
-              )}
-              {syncStatus?.lastPriceSync && (
-                <p className="text-xs text-gray-500">
-                  Last price sync: {new Date(syncStatus.lastPriceSync).toLocaleString()}
-                </p>
-              )}
+              <p className="font-medium text-gray-900 dark:text-white">Card Data Sync</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">How often to update card data</p>
             </div>
-            <button
-              onClick={handleTriggerSync}
-              disabled={syncStatus?.isSyncing}
-              className="btn-primary btn-sm"
+            <select
+              value={syncSettings?.cardSyncSchedule ?? 'daily'}
+              onChange={e => handleUpdateSyncSetting({ cardSyncSchedule: e.target.value })}
+              className="input w-32"
             >
-              {syncStatus?.isSyncing ? (
-                <span className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                  Syncing
-                </span>
-              ) : 'Sync Now'}
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="manual">Manual</option>
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-gray-900 dark:text-white">Price Sync</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">How often to update card prices</p>
+            </div>
+            <select
+              value={syncSettings?.priceSyncSchedule ?? 'weekly'}
+              onChange={e => handleUpdateSyncSetting({ priceSyncSchedule: e.target.value })}
+              className="input w-32"
+            >
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="manual">Manual</option>
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-gray-900 dark:text-white">Recent Sets Window</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">How many months of recent sets to sync</p>
+            </div>
+            <input
+              type="number"
+              min={1}
+              max={24}
+              value={syncSettings?.cardSyncRecentMonths ?? 3}
+              onChange={e => handleUpdateSyncSetting({ cardSyncRecentMonths: Number(e.target.value) })}
+              className="input w-20 text-center"
+            />
+          </div>
+        </div>
+
+        {/* Database */}
+        <div className="space-y-4">
+          <h3 className="text-md font-medium text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">Database</h3>
+          
+          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-700/30">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+              Back up your database to SQLite file. You can restore a backup by replacing your current database file.
+            </p>
+            
+            <button
+              onClick={downloadBackup}
+              className="btn-sm bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+            >
+              Download Backup
             </button>
           </div>
-        </div>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-medium text-gray-900 dark:text-white">Card Data Sync</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">How often to update card data</p>
+          <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+            <h4 className="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">To restore a backup:</h4>
+            <ol className="text-sm text-blue-700 dark:text-blue-400 list-decimal list-inside space-y-1 ml-4">
+              <li>Stop the application</li>
+              <li>Replace <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">spots.db</code> with your backup file</li>
+              <li>Restart the application</li>
+            </ol>
+            <p className="text-xs text-blue-600 dark:text-blue-500 mt-2">
+              The database file is located in the data directory. If using Docker, use <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">docker cp</code> to copy files.
+            </p>
           </div>
-          <select
-            value={syncSettings?.cardSyncSchedule ?? 'daily'}
-            onChange={e => handleUpdateSyncSetting({ cardSyncSchedule: e.target.value })}
-            className="input w-32"
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="manual">Manual</option>
-          </select>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-medium text-gray-900 dark:text-white">Price Sync</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">How often to update card prices</p>
-          </div>
-          <select
-            value={syncSettings?.priceSyncSchedule ?? 'weekly'}
-            onChange={e => handleUpdateSyncSetting({ priceSyncSchedule: e.target.value })}
-            className="input w-32"
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="manual">Manual</option>
-          </select>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-medium text-gray-900 dark:text-white">Recent Sets Window</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">How many months of recent sets to sync</p>
-          </div>
-          <input
-            type="number"
-            min={1}
-            max={24}
-            value={syncSettings?.cardSyncRecentMonths ?? 3}
-            onChange={e => handleUpdateSyncSetting({ cardSyncRecentMonths: Number(e.target.value) })}
-            className="input w-20 text-center"
-          />
         </div>
       </div>
 

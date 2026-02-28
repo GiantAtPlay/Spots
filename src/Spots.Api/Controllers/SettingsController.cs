@@ -10,10 +10,12 @@ namespace Spots.Api.Controllers;
 public class SettingsController : ControllerBase
 {
     private readonly SpotsDbContext _db;
+    private readonly IWebHostEnvironment _env;
 
-    public SettingsController(SpotsDbContext db)
+    public SettingsController(SpotsDbContext db, IWebHostEnvironment env)
     {
         _db = db;
+        _env = env;
     }
 
     [HttpGet]
@@ -51,5 +53,40 @@ public class SettingsController : ControllerBase
             InitialSetupComplete = settings.InitialSetupComplete,
             GridColumns = settings.GridColumns
         });
+    }
+
+    [HttpGet("backup")]
+    public async Task<IActionResult> BackupDatabase()
+    {
+        try
+        {
+            // Get the database path from the connection string or config
+            var dbPath = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+            if (string.IsNullOrEmpty(dbPath))
+            {
+                // Default path
+                dbPath = "Data Source=/app/data/spots.db";
+            }
+
+            // Extract the file path from connection string
+            var filePath = dbPath.Replace("Data Source=", "").Trim();
+            
+            // Check if file exists
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("Database file not found");
+            }
+
+            // Read the file
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            // Return as file download
+            var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+            return File(fileBytes, "application/vnd.sqlite3", $"spots-backup-{timestamp}.db");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error backing up database: {ex.Message}");
+        }
     }
 }

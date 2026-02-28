@@ -441,6 +441,7 @@ Add ability to add cards to custom trackers. This requires creating a new page f
 **Files affected:**
 - `src/Spots.App/src/pages/SettingsPage.tsx`
 - `src/Spots.Api/Controllers/SettingsController.cs`
+- `docker-compose.yml` (to mount database volume)
 
 ---
 
