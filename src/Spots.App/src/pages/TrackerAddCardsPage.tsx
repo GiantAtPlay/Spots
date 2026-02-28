@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { getTracker, getTrackerCards, searchCards, addTrackerCard, removeTrackerCard } from '../api/client'
 import CardImage from '../components/CardImage'
 import ViewToggle from '../components/ViewToggle'
-import CardHoverPreview from '../components/CardHoverPreview'
 import GridSizeSlider from '../components/GridSizeSlider'
 import { useSettings } from '../components/SettingsContext'
 import type { Tracker, ScryfallCard, ViewMode } from '../types'
@@ -174,65 +173,52 @@ export default function TrackerAddCardsPage() {
 
                 return (
                   <div key={card.id} className="relative group">
-                    <CardHoverPreview 
-                      imageUri={card.image_uris?.normal} 
-                      cardName={card.name}
-                    >
-                      <div className={`cursor-pointer transition-all ${isInTracker ? 'ring-2 ring-primary-500' : ''}`}>
-                        <CardImage
-                          src={card.image_uris?.normal ?? card.image_uris?.small}
-                          alt={card.name}
-                          size="fluid"
-                        />
-                      </div>
-                    </CardHoverPreview>
-                    <div className="mt-2">
-                      <p className="font-medium text-gray-900 dark:text-white text-sm truncate">{card.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{card.set?.toUpperCase()} {card.collector_number}</p>
+                    <div className="cursor-pointer">
+                      <CardImage
+                        src={card.image_uris?.normal ?? card.image_uris?.small}
+                        alt={card.name}
+                        size="fluid"
+                        className={isInTracker ? 'ring-2 ring-primary-500' : ''}
+                      />
                     </div>
-                    {isLoading ? (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                    <div className="absolute top-2 right-2 flex gap-1">
+                      {isInTracker && (
+                        <span className="bg-primary-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                          In Tracker
+                        </span>
+                      )}
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-2 rounded-b-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                      <p className="text-white text-xs font-medium truncate">{card.name}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {isLoading ? (
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        ) : isInTracker ? (
+                          <button
+                            onClick={() => handleRemoveCard(card.id)}
+                            className="text-white bg-red-600 hover:bg-red-500 px-2 py-1 rounded text-xs font-medium"
+                          >Remove</button>
+                        ) : (
+                          <button
+                            onClick={() => handleAddCard(card.id)}
+                            className="text-white bg-primary-600 hover:bg-primary-500 px-2 py-1 rounded text-xs font-medium"
+                          >Add</button>
+                        )}
                       </div>
-                    ) : isInTracker ? (
-                      <button
-                        onClick={() => handleRemoveCard(card.id)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Remove from tracker"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleAddCard(card.id)}
-                        className="absolute top-2 right-2 bg-primary-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Add to tracker"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                      </button>
-                    )}
-                    {isInTracker && (
-                      <div className="absolute bottom-12 left-2 bg-primary-600 text-white text-xs px-2 py-1 rounded">
-                        In Tracker
-                      </div>
-                    )}
+                    </div>
                   </div>
                 )
               })}
             </div>
           ) : (
             <div className="card overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-800">
+              <table className="w-full text-sm table-fixed">
+                <thead className="bg-gray-50 dark:bg-gray-700/50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Name</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400">Set</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400">#</th>
-                    <th className="px-4 py-2 text-right text-sm font-medium text-gray-500 dark:text-gray-400">Action</th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-12">#</th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">Name</th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 w-24">Set</th>
+                    <th className="px-4 py-3 text-center font-medium text-gray-500 dark:text-gray-400 w-32">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -241,33 +227,30 @@ export default function TrackerAddCardsPage() {
                     const isLoading = addingCards.has(card.id)
 
                     return (
-                      <tr key={card.id} className={isInTracker ? 'bg-primary-50 dark:bg-primary-900/20' : ''}>
-                        <td className="px-4 py-2">
-                          <div className="flex items-center gap-2">
-                            <CardImage src={card.image_uris?.small} alt={card.name} size="small" className="w-8 h-8" />
-                            <span className="font-medium text-gray-900 dark:text-white">{card.name}</span>
-                          </div>
+                      <tr key={card.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/30 cursor-pointer transition-colors ${isInTracker ? 'bg-primary-50 dark:bg-primary-900/20' : ''}`}>
+                        <td className="px-4 py-3 text-gray-500">{card.collector_number}</td>
+                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-white truncate">{card.name}</td>
+                        <td className="px-4 py-3">
+                          <span className="badge bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                            {card.set?.toUpperCase()}
+                          </span>
                         </td>
-                        <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{card.set?.toUpperCase()}</td>
-                        <td className="px-4 py-2 text-gray-500 dark:text-gray-400">{card.collector_number}</td>
-                        <td className="px-4 py-2 text-right">
-                          {isLoading ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600 ml-auto"></div>
-                          ) : isInTracker ? (
-                            <button
-                              onClick={() => handleRemoveCard(card.id)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              Remove
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleAddCard(card.id)}
-                              className="text-primary-600 hover:text-primary-800"
-                            >
-                              Add
-                            </button>
-                          )}
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-center gap-1">
+                            {isLoading ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
+                            ) : isInTracker ? (
+                              <button
+                                onClick={() => handleRemoveCard(card.id)}
+                                className="btn-sm text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded px-2 py-1"
+                              >Remove</button>
+                            ) : (
+                              <button
+                                onClick={() => handleAddCard(card.id)}
+                                className="btn-sm text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded px-2 py-1"
+                              >Add</button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     )
