@@ -428,15 +428,35 @@ Add ability to add cards to custom trackers. This requires creating a new page f
 
 ## Phase 9: Settings & Data Management
 
-### 9.1 Database backup
-**Status:** Pending
-**Branch:** TBD
+### 9.1 Database backup & restore
+**Status:** Completed
+**Branch:** feature/database-backup
 
 **Requirements:**
-- Add "Backup Database" button to settings page
-- Download SQLite .db file to user's machine
-- Backend endpoint to serve the file
-- Consider: Also add restore functionality?
+- Add "Database" section to settings page (under renamed "Data Management" heading)
+- Add "Backup Database" button to download SQLite .db file
+- Backend endpoint to serve the backup file
+- Add text instructions for manual restore (copy/paste workflow)
+- Require confirmation before restore (similar to "Reset Collection")
+- Show warning that restore will delete all existing data
+
+**Section structure:**
+- Rename "Data Sync" heading to "Data Management"
+- Add subheadings: "Data Sync" and "Database"
+
+**Backup details:**
+- Raw SQLite .db file (fast and simple)
+- Downloaded to user's machine
+- Can be used to replace current database
+
+**Restore instructions (displayed on settings page):**
+```
+1. Stop the application
+2. Replace spots.db with your backup file
+3. Restart the application
+```
+
+**Note:** Automated restore API is not implemented yet - backup is manual download, restore is manual file replacement.
 
 **Files affected:**
 - `src/Spots.App/src/pages/SettingsPage.tsx`
